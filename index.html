@@ -1,10 +1,65 @@
 <html>
     <head> 
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Database doctors</title>
     </head>
 	
     <body>
 
+        <!-- Your website content here -->
+        <h1>Welcome to My Simple Website</h1>
         
+        <!-- Registration Form -->
+        <form id="registration-form">
+            <input type="email" id="registration-email" placeholder="Email">
+            <input type="password" id="registration-password" placeholder="Password">
+            <button type="submit">Register</button>
+        </form>
+
+        <!-- Login Form -->
+        <form id="login-form">
+            <input type="email" id="login-email" placeholder="Email">
+            <input type="password" id="login-password" placeholder="Password">
+            <button type="submit">Login</button>
+        </form>
+
+        <script>
+            // Handle User Registration
+            document.getElementById("registration-form").addEventListener("submit", function(event) {
+                event.preventDefault();
+        
+                var email = document.getElementById("registration-email").value;
+                var password = document.getElementById("registration-password").value;
+        
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then(function(user) {
+                        console.log("Registration successful");
+                    })
+                    .catch(function(error) {
+                        console.error("Registration failed: " + error.message);
+                    });
+            });
+        </script>
+
+        <script>
+            // Handle User Login
+            document.getElementById("login-form").addEventListener("submit", function(event) {
+                event.preventDefault();
+
+                var email = document.getElementById("login-email").value;
+                var password = document.getElementById("login-password").value;
+
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(function(user) {
+                        console.log("Login successful");
+                    })
+                    .catch(function(error) {
+                        console.error("Login failed: " + error.message);
+                    });
+            });
+        </script>
+
 
         <script type="module">
             // Import the functions you need from the SDKs you need
@@ -24,6 +79,9 @@
 
             // Initialize Firebase
             const app = initializeApp(firebaseConfig);
+
+             // Initialize Firebase Authentication
+            var auth = firebase.auth();
         </script>
     </body>
 </html>
