@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Course Homework</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Database Course Homework</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Search</a></li>
+                <li><a href="#">Appointments</a></li>
+                <li><a href="#">Profile</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+       
+        
+        <section id="search">
+            <h2>Search for Appointments</h2>
+            <form>
+                <label for="specialty">Specialty:</label>
+                <select id="specialty" name="specialty">
+                    <option value="all">All Specialties</option>
+                    <option value="cardiology">Cardiology</option>
+                    <option value="dentistry">Dentistry</option>
+                    <option value="dermatology">Dermatology</option>
+                    <option value="orthopedics">Orthopedics</option>
+                    <option value="neurology">Neurology</option>
+                    <option value="pediatrics">Pediatrics</option>
+                    <option value="oncology">Oncology</option>
+                    <option value="psychiatry">Psychiatry</option>
+                    <option value="radiology">Radiology</option>
+                    <option value="ophthalmology">Ophthalmology</option>
+                    <option value="gynecology">Gynecology</option>
+                </select>
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date">
+                <input type="submit" value="Search">
+            </form>
+            <div id="appointments">
+                <!-- Appointment results will be displayed here -->
+            </div>
+        </section>
+        
+        <section id="user-appointments">
+            <h2>Your Appointments</h2>
+            <div id="user-appointments-list">
+                <!-- User's booked appointments will be displayed here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Database Course Homework</p>
+    </footer>
+</body>
+</html>
