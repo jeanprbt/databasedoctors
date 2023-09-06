@@ -107,12 +107,14 @@
     import {
         getAuth,
         signInWithEmailAndPassword,
+        signOut,
     } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
     import {
         getFirestore,
         getDocs,
         collection,
         where,
+        query
     } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
 
     // Your web app's Firebase configuration
@@ -128,15 +130,41 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
 
+    // Initialize Firebase Authentication
+    const auth = getAuth(app);
+
     // Initialize Firestore
     const db = getFirestore(app);
 
-    //Handle Account Status
-    app.auth().onAuthStateChanged(user => {
-    if(!user) {
-        window.location = 'login.html'; //If User is not logged in, redirect to login page
-    }
+    // Handle Account Status
+    auth.onAuthStateChanged(user => {
+        if (!user) {
+            window.location = 'index.html'; // If User is not logged in, redirect to login page
+        }
     });
+
+    const user = auth.currentUser;
+
+    // Add a welcome message
+    const welcomeMessage = document.createElement('h2');
+    welcomeMessage.textContent = `Welcome ${user}`;
+    const main = document.querySelector('main');
+    main.insertBefore(welcomeMessage, main.firstChild);
+
+    // Add a sign out button
+
+    const signOutButton = document.createElement('button');
+    signOutButton.textContent = 'Sign Out';
+    signOutButton.addEventListener('click', signOutUser);
+    main.insertBefore(signOutButton, main.firstChild);
+
+    function signOutUser() {
+        signOut(auth).then(() => {
+            console.log("Sign out succesful.");
+        }).catch((error) => {
+            console.log("An error happened during sign out.");
+        });
+    }
 
     //Function to display
     function displaySearchResults(querySnapshot) {
@@ -176,10 +204,9 @@
             appointmentsDiv.appendChild(doctorCard);
         });
     }
-Ò
 
     // Get the doctors database
-    const doctorsDB = collection(db, 'doctors'); 
+    const doctorsDB = collection(db, 'doctors');
     const searchForm = document.querySelector('form');
     searchForm.addEventListener('submit', async (e) => {
         e.preventDefault(); // Prevent the default form submission behavior
@@ -190,27 +217,26 @@
         const city = document.getElementById('city').value;
 
         // Query the Firebase database based on user input
-        let query = doctorsDB;
+        let answer = doctorsDB;
 
         if (speciality !== 'All Specialities') {
-            query = query.where('speciality', '==', speciality);
+            answer = query(answer, where('speciality', '==', speciality));
         }
 
         //TODO, gérer la date
         //if (date !== '') {
-            //query = query.where('availableDates', 'array-contains', date);
+        //answer = ;
         //}
 
         if (city !== '') {
-            query = query.where('city', '==', city);
+            answer = query(answer, where('city', '==', city));
         }
         // Execute the query
-        const querySnapshot = await query.get();
+        const querySnapshot = await answer.get();
 
         // Display the search results
         displaySearchResults(querySnapshot);
-
     });
-</script>        
+</script>
 
 </html>
