@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Database doctors</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -16,21 +17,17 @@
     <!-- Registration Form -->
     <h3>Registration form</h3>
     <form id="registration-form">
-        <label for="email">Email:</label>
-        <input type="email" id="email" required>
+        <input type="email" id="email" placeholder="Email" required>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" required>
+        <input type="password" id="password" placeholder="Password" required>
 
-        <label for="name">Display Name:</label>
-        <input type="text" id="name">
+        <input type="text" id="name" placeholder="Name" required>
 
-        <label for="age">Age:</label>
-        <input type="number" id="age">
+        <input type="number" id="age" placeholder="Age" required>
 
         <button type="submit">Register</button>
         <div id="registration-error" style="color: red;"></div>
-        <div id="registration-succ" style="color: green;"></div>
+        <div id="registration-success" style="color: green;"></div>
     </form>
 
 
@@ -88,34 +85,34 @@
             const name = document.getElementById('name').value;
             const age = document.getElementById('age').value;
 
-            try {
-                // Create a user with Firebase Authentication
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
+                    // Signed in 
+                    const user = userCredential.user;
 
-                // Store additional user data in Firestore
-                await setDoc(doc(db, "patients", user.uid), {
-                    name: name,
-                    age: age,
-                    email: email
+                    // Storing user in patients database
+                    await setDoc(doc(db, "patients", user.uid), {
+                        name: name,
+                        age: age,
+                        email: email
+                    });
+
+                    console.log('Registration successful !');
+                    // Clear any previous error messages
+                    document.getElementById('registration-error').textContent = '';
+                    // Display successful registration message
+                    document.getElementById('registration-success').textContent = 'Registration successful !';
+
+                })
+                .catch((error) => {
+                    console.error('Registration failed :', error.message);
+                    // Clear any previous succesful error message
+                    document.getElementById('registration-success').textContent = '';
+                    // Display error messageÒ
+                    document.getElementById('registration-error').textContent = getErrorMessageForFirebaseErrorCode(error.code);
                 });
-                
-                console.log('Registration successful!');
-                // Clear any previous error messages
-                document.getElementById('registration-error').textContent = '';
-                //display successful registration message
-                document.getElementById('registration-succ').textContent = 'Registration successful !'; 
 
-            } catch (error) {
-                console.error('Error during registration:', error.message);
 
-                //CLear any previous succeful err mess
-                document.getElementById('registration-succ').textContent = ''; 
- 
-                //display error message
-                const errorMessage = getErrorMessageForFirebaseErrorCode(error.code);
-                document.getElementById('registration-error').textContent = errorMessage;
-            }
         });
 
     </script>

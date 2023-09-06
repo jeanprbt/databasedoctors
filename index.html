@@ -1,51 +1,62 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Database doctors</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-
     <!-- Your website content here -->
-    <h1>Welcome to Database doctors ! /h1>
+    <h1>Welcome to Database doctors !</h1>
 
     <!-- Login Form -->
     <h3>Login form</h3>
     <form id="login-form">
-        <input type="email" id="login-email" placeholder="Email">
-        <input type="password" id="login-password" placeholder="Password">
+        <input type="email" id="login-email" placeholder="Email" required />
+        <input type="password" id="login-password" placeholder="Password" required />
         <button type="submit">Login</button>
-        <div id="registration-error" style="color: red;"></div>
+        <div id="login-success" style="color: green"></div>
+        <div id="login-error" style="color: red"></div>
     </form>
 
-    <p>Do you want to register as a doctor ?</p><a href="signup_doctor.html">Click here</a>
-    <p>Do you want to register as a patient ?</p><a href="signup_patient.html">Click here</a>
+    <p>Do you want to register as a doctor ?</p>
+    <a href="signup_doctor.html">Click here</a>
+    <p>Do you want to register as a patient ?</p>
+    <a href="signup_patient.html">Click here</a>
 
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+        } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
+        import {
+            getFirestore,
+            getDoc,
+            doc
+        } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
 
         // Define the getErrorMessageForFirebaseErrorCode function
         function getErrorMessageForFirebaseErrorCode(errorCode) {
             switch (errorCode) {
-                case 'auth/email-already-in-use':
-                    return 'The email address is already in use by another account.';
-                case 'auth/invalid-email':
-                    return 'Invalid email address. Please check the email format.';
-                case 'auth/weak-password':
-                    return 'The password is too weak. Please use a stronger password.';
-                case 'auth/user-not-found':
-                    return 'User not found. Please check your email or register.';
-                case 'auth/wrong-password':
-                    return 'Incorrect password. Please try again.';
+                case "auth/email-already-in-use":
+                    return "The email address is already in use by another account.";
+                case "auth/invalid-email":
+                    return "Invalid email address. Please check the email format.";
+                case "auth/weak-password":
+                    return "The password is too weak. Please use a stronger password.";
+                case "auth/user-not-found":
+                    return "User not found. Please check your email or register.";
+                case "auth/wrong-password":
+                    return "Incorrect password. Please try again.";
                 // Add more cases for other error codes as needed
                 default:
-                    return 'An error occurred. Please try again later.';
+                    return "An error occurred. Please try again later.";
             }
         }
 
@@ -56,7 +67,7 @@
             projectId: "database-project-bd7e8",
             storageBucket: "database-project-bd7e8.appspot.com",
             messagingSenderId: "771888139690",
-            appId: "1:771888139690:web:6b1e5ee383ec06df976fd3"
+            appId: "1:771888139690:web:6b1e5ee383ec06df976fd3",
         };
 
         // Initialize Firebase
@@ -65,27 +76,47 @@
         // Initialize Firebase Authentication
         const auth = getAuth(app);
 
+        // Initialize Firestore
+        const db = getFirestore(app);
+
         // Handle User Login
-        document.getElementById("login-form").addEventListener("submit", function (event) {
-            event.preventDefault();
+        document
+            .getElementById("login-form")
+            .addEventListener("submit", async (event) => {
+                event.preventDefault();
 
-            var email = document.getElementById("login-email").value;
-            var password = document.getElementById("login-password").value;
+                var email = document.getElementById("login-email").value;
+                var password = document.getElementById("login-password").value;
 
-            signInWithEmailAndPassword(auth, email, password)
-                .then(function (user) {
-                    console.log("Login successful");
-                    // Clear any previous error messages
-                     document.getElementById('login-error').textContent = '';
-                     window.location.replace("patient.html");})
-                .catch(function (error) {
-                    console.error("Login failed: " + error.message);
-                    const errorMessage = getErrorMessageForFirebaseErrorCode(error.code);
-                    // Display the error message to the user
-                    document.getElementById('login-error').textContent = errorMessage;
-                });
-        });
 
+                // Log in user with Firebase Authentication
+                signInWithEmailAndPassword(auth, email, password)
+                    .then(async (userCredential) => {
+
+                        // Clear any previous error messages
+                        document.getElementById("login-error").textContent = "";
+                        //  Display successful login message
+                        document.getElementById("login-success").textContent =
+                            "Login successful !";
+
+                        const docRef = doc(db, "patients", userCredential.user.uid);
+                        const docSnap = await getDoc(docRef);
+
+                        if (docSnap.exists()) {
+                            window.location.href = "patient.html";
+                        } else {
+                            window.location.href = "doctor.html";
+                        }
+                        
+                    }).catch((error) => {
+                        console.error("Login failed : " + error.message);
+                        // Clear any previous succeful errpr message
+                        document.getElementById("login-success").textContent = "";
+                        // Display error message
+                        document.getElementById("login-error").textContent =
+                            getErrorMessageForFirebaseErrorCode(error.code);
+                    });
+            });
     </script>
 </body>
 

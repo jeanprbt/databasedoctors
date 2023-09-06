@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Database Course Homework</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
     <header>
-        <h1>Welcome to Database Course Homework</h1>
         <nav>
-            <ul>
+            <h1 class="logo">Database-doctors</h1>
+            <ul class="nav-links">
                 <li><a href="#">Home</a></li>
                 <li><a href="#">Search</a></li>
                 <li><a href="#">Appointments</a></li>
@@ -18,37 +20,26 @@
             </ul>
         </nav>
     </header>
-    
+
     <main>
-       
-        
         <section id="search">
             <h2>Search for Appointments</h2>
             <form>
-                <label for="specialty">Specialty:</label>
-                <select id="specialty" name="specialty">
-                    <option value="all">All Specialties</option>
-                    <option value="cardiology">Cardiology</option>
-                    <option value="dentistry">Dentistry</option>
-                    <option value="dermatology">Dermatology</option>
-                    <option value="orthopedics">Orthopedics</option>
-                    <option value="neurology">Neurology</option>
-                    <option value="pediatrics">Pediatrics</option>
-                    <option value="oncology">Oncology</option>
-                    <option value="psychiatry">Psychiatry</option>
-                    <option value="radiology">Radiology</option>
-                    <option value="ophthalmology">Ophthalmology</option>
-                    <option value="gynecology">Gynecology</option>
+                <label for="speciality">Speciality:</label>
+                <select id="speciality" name="speciality">
+                    <!-- Options will be added dynamically -->
                 </select>
                 <label for="date">Date:</label>
-                <input type="date" id="date" name="date">
-                <input type="submit" value="Search">
+                <input type="date" id="date" name="date" />
+                <label for="city">City:</label>
+                <select id="city" name="city" placeholder="Select a swedish city"></select>
+                <button type="submit">Search</button>
             </form>
-            <div id="appointments">
+            <div id="result">
                 <!-- Appointment results will be displayed here -->
             </div>
         </section>
-        
+
         <section id="user-appointments">
             <h2>Your Appointments</h2>
             <div id="user-appointments-list">
@@ -61,4 +52,165 @@
         <p>&copy; 2023 Database Course Homework</p>
     </footer>
 </body>
+
+<script type="module">
+    // Define an array of allowed cities in Sweden
+    const allowedPlaces = [
+        "Stockholm",
+        "Gothenburg",
+        "Malmö",
+        "Uppsala",
+        "Västerås",
+        "Örebro",
+        "Linköping",
+        "Helsingborg",
+        "Jönköping",
+        "Norrköping",
+        "Lund",
+        "Umeå",
+    ];
+    // Add the options to the select element for city
+    const selectCity = document.getElementById("city");
+    for (let i = 0; i < allowedPlaces.length; i++) {
+        const option = document.createElement("option");
+        option.value = allowedPlaces[i];
+        option.text = allowedPlaces[i];
+        selectCity.appendChild(option);
+    }
+
+    const specialities = [
+        "All Specialities",
+        "Cardiology",
+        "Dentistry",
+        "Dermatology",
+        "Orthopedics",
+        "Neurology",
+        "Pediatrics",
+        "Oncology",
+        "Psychiatry",
+        "Radiology",
+        "Ophthalmology",
+        "Gynecology",
+    ];
+
+    // Add the options to the select element
+    const select = document.getElementById("speciality");
+    for (let i = 0; i < specialities.length; i++) {
+        const option = document.createElement("option");
+        option.value = specialities[i];
+        option.text = specialities[i];
+        select.appendChild(option);
+    }
+
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
+    import {
+        getAuth,
+        signInWithEmailAndPassword,
+    } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
+    import {
+        getFirestore,
+        getDocs,
+        collection,
+        where,
+    } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDeiRIFp3pz2fNxMlGCsTc-NA7GviQghZU",
+        authDomain: "database-project-bd7e8.firebaseapp.com",
+        projectId: "database-project-bd7e8",
+        storageBucket: "database-project-bd7e8.appspot.com",
+        messagingSenderId: "771888139690",
+        appId: "1:771888139690:web:6b1e5ee383ec06df976fd3",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    // Initialize Firestore
+    const db = getFirestore(app);
+
+    //Handle Account Status
+    app.auth().onAuthStateChanged(user => {
+    if(!user) {
+        window.location = 'login.html'; //If User is not logged in, redirect to login page
+    }
+    });
+
+    //Function to display
+    function displaySearchResults(querySnapshot) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = ''; // Clear previous results
+
+        if (querySnapshot.empty) {
+            resultDiv.textContent = 'No doctors found.';
+            return;
+        }
+
+        querySnapshot.forEach((doc) => {
+            const doctorData = doc.data();
+
+            // Create elements to display doctor information (e.g., name, speciality, etc.)
+            const doctorCard = document.createElement('div');
+            doctorCard.classList.add('doctor-card');
+            // Add doctor information to the card
+
+            const doctorName = document.createElement('h3');
+            doctorName.textContent = doctorData.name;
+
+            const doctorSpeciality = document.createElement('p');
+            doctorSpeciality.textContent = `Speciality: ${doctorData.speciality}`;
+
+            const doctorCity = document.createElement('p');
+            doctorCity.textContent = `City: ${doctorData.city}`;
+
+            // You can add more elements to display other doctor information as needed
+
+            // Append the elements to the card
+            doctorCard.appendChild(doctorName);
+            doctorCard.appendChild(doctorSpeciality);
+            doctorCard.appendChild(doctorCity);
+
+            // Append the card to the appointmentsDiv
+            appointmentsDiv.appendChild(doctorCard);
+        });
+    }
+Ò
+
+    // Get the doctors database
+    const doctorsDB = collection(db, 'doctors'); 
+    const searchForm = document.querySelector('form');
+    searchForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Prevent the default form submission behavior
+
+        // Collect user input
+        const speciality = document.getElementById('speciality').value;
+        const date = document.getElementById('date').value;
+        const city = document.getElementById('city').value;
+
+        // Query the Firebase database based on user input
+        let query = doctorsDB;
+
+        if (speciality !== 'All Specialities') {
+            query = query.where('speciality', '==', speciality);
+        }
+
+        //TODO, gérer la date
+        //if (date !== '') {
+            //query = query.where('availableDates', 'array-contains', date);
+        //}
+
+        if (city !== '') {
+            query = query.where('city', '==', city);
+        }
+        // Execute the query
+        const querySnapshot = await query.get();
+
+        // Display the search results
+        displaySearchResults(querySnapshot);
+
+    });
+</script>        
+
 </html>
