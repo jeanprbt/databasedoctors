@@ -201,7 +201,7 @@
             doctorCard.appendChild(doctorCity);
 
             // Append the card to the appointmentsDiv
-            appointmentsDiv.appendChild(doctorCard);
+            resultDiv.appendChild(doctorCard);
         });
     }
 
@@ -217,7 +217,7 @@
         const city = document.getElementById('city').value;
 
         // Query the Firebase database based on user input
-        let answer = doctorsDB;
+        let answer = query(doctorsDB);
 
         if (speciality !== 'All Specialities') {
             answer = query(answer, where('speciality', '==', speciality));
@@ -225,14 +225,14 @@
 
         //TODO, gérer la date
         //if (date !== '') {
-        //answer = ;
+            //answer = ;
         //}
 
         if (city !== '') {
             answer = query(answer, where('city', '==', city));
         }
         // Execute the query
-        const querySnapshot = await answer.get();
+        const querySnapshot = await getDocs(answer);
 
         // Display the search results
         displaySearchResults(querySnapshot);
