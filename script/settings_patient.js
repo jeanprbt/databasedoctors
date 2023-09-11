@@ -10,7 +10,8 @@ import {
     getFirestore,
     doc,
     updateDoc,
-    deleteDoc
+    deleteDoc,
+    getDoc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
 
 // Your web app's Firebase configuration
@@ -38,10 +39,23 @@ let currentUser;
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
+
+        // Fill form fields with current data
+        document.getElementById('new-email').value = currentUser.email;
+        document.getElementById('new-name').value = currentUser.displayName;
+        getDoc(doc(db, "patients", currentUser.uid)).then((doc) => {
+            if (doc.exists()) {
+                document.getElementById('new-age').value = doc.data().age;
+            } else {
+                console.log("No such document!");
+            }
+        })
+
     } else {
         window.location = 'index.html'; // If user is not logged in, redirect to login page
     }
 });
+
 
 
 // Handle email change
