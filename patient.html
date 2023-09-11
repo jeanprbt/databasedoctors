@@ -13,49 +13,44 @@
         <nav>
             <h1 class="logo">Database-doctors</h1>
             <ul class="nav-links">
-                <li><a href="#">Home</a></li>
                 <li><a href="#">Search</a></li>
                 <li><a href="#">Appointments</a></li>
                 <li><a href="#">Profile</a></li>
+                <li id="sign-out"><a href="#">Sign out</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
         <section id="search">
-            <h2>Search for Appointments</h2>
-            <form>
-                <label for="speciality">Speciality:</label>
-                <select id="speciality" name="speciality">
-                    <!-- Options will be added dynamically -->
-                </select>
-                <label for="date">Date:</label>
-                <input type="date" id="date" name="date" />
-                <label for="city">City:</label>
-                <select id="city" name="city" placeholder="Select a swedish city"></select>
-                <button type="submit">Search</button>
-            </form>
-            <div id="result">
-                <!-- Appointment results will be displayed here -->
+            <div class="form">
+                <h2>Search for Appointments</h2>
+                <form>
+                    <label for="speciality">Speciality:</label>
+                    <select id="speciality" name="speciality"></select>
+                    <!-- <label for="date">Date:</label> -->
+                    <!-- <input type="date" id="date" name="date" /> -->
+                    <label for="city">City:</label>
+                    <select id="city" name="city" placeholder="Select a swedish city"></select>
+                    <button type="submit">Search</button>
+                </form>
+                <div id="result">
+                    <!-- Appointment results will be displayed here -->
+                </div>
             </div>
-        </section>
 
-        <section id="user-appointments">
-            <h2>Your Appointments</h2>
-            <div id="user-appointments-list">
-                <!-- User's booked appointments will be displayed here -->
-            </div>
         </section>
     </main>
 
-    <footer>
+    <!-- <footer>
         <p>&copy; 2023 Database Course Homework</p>
-    </footer>
+    </footer> -->
 </body>
 
 <script type="module">
     // Define an array of allowed cities in Sweden
     const allowedPlaces = [
+        "All Cities",
         "Stockholm",
         "Gothenburg",
         "Malmö",
@@ -151,12 +146,11 @@
     const main = document.querySelector('main');
     main.insertBefore(welcomeMessage, main.firstChild);
 
-    // Add a sign out button
+    // Add a sign out link in the navigation bar
 
-    const signOutButton = document.createElement('button');
-    signOutButton.textContent = 'Sign Out';
-    signOutButton.addEventListener('click', signOutUser);
-    main.insertBefore(signOutButton, main.firstChild);
+    const signOutLink = document.getElementById('sign-out');
+    signOutLink.addEventListener('click', signOutUser);
+    
 
     function signOutUser() {
         signOut(auth).then(() => {
@@ -213,7 +207,7 @@
 
         // Collect user input
         const speciality = document.getElementById('speciality').value;
-        const date = document.getElementById('date').value;
+        // const date = document.getElementById('date').value;
         const city = document.getElementById('city').value;
 
         // Query the Firebase database based on user input
@@ -225,10 +219,10 @@
 
         //TODO, gérer la date
         //if (date !== '') {
-            //answer = ;
+        //answer = ;
         //}
 
-        if (city !== '') {
+        if (city !== 'All Cities') {
             answer = query(answer, where('city', '==', city));
         }
         // Execute the query

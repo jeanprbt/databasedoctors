@@ -4,32 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Database doctors</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="form-style.css">
 </head>
 
 <body>
 
-    <!-- Your website content here -->
     <h1>Patient registration</h1>
 
-    <p>Are you a doctor ?</p><a href="signup_doctor.html">Click here</a>
 
-    <!-- Registration Form -->
-    <h3>Registration form</h3>
-    <form id="registration-form">
-        <input type="email" id="email" placeholder="Email" required>
+    <div class="form">
+        <h2>Registration form</h2>
+        <form id="registration-form">
+            <input type="email" id="email" placeholder="Email" required>
 
-        <input type="password" id="password" placeholder="Password" required>
+            <input type="password" id="password" placeholder="Password" required>
 
-        <input type="text" id="name" placeholder="Name" required>
+            <input type="text" id="name" placeholder="Name" required>
 
-        <input type="number" id="age" placeholder="Age" required>
+            <input type="number" id="age" placeholder="Age" required>
 
-        <button type="submit">Register</button>
-        <div id="registration-error" style="color: red;"></div>
-        <div id="registration-success" style="color: green;"></div>
-    </form>
-
+            <button type="submit">Register</button>
+            <div id="registration-error" style="color: red;"></div>
+            <div id="registration-success" style="color: green;"></div>
+        </form>
+        <div class="account">
+            <p>Are you a doctor ?</p>
+            <a href="signup_doctor.html">Click here</a>
+        </div>
+    </div>
 
     <script type="module">
         // Import the functions you need from the SDKs you need
