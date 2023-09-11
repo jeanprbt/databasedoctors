@@ -1,0 +1,55 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings</title>
+    <link rel="stylesheet" href="style/style.css" />
+    <script type="module" src="script/settings_patient.js"></script>
+</head>
+
+<header>
+    <nav>
+        <h1 class="logo">Database-doctors</h1>
+        <ul class="nav-links">
+            <li><a href="#">Search</a></li>
+            <li><a href="#">Appointments</a></li>
+            <li><a href="settings_patient.html">Profile</a></li>
+            <li id="sign-out"><a href="#">Sign out</a></li>
+        </ul>
+    </nav>
+</header>
+
+
+<body>
+    <h1>User Settings</h1>
+
+    <h2>Change Email</h2>
+    <form id="email-form">
+        <input type="email" id="new-email" placeholder="New Email">
+        <button type="submit">Change Email</button>
+        <div id="email-success" style="color: green"></div>
+        <div id="email-error" style="color: red"></div>
+    </form>
+
+
+    <h2>Change Password</h2>
+    <form id="password-form">
+        <input type="password" id="new-password" placeholder="New Password">
+        <button type="submit">Change Password</button>
+        <div id="password-success" style="color: green"></div>
+        <div id="password-error" style="color: red"></div>
+    </form>
+
+    <h2>Update Profile</h2>
+    <form id="profile-form">
+        <input type="text" id="new-name" placeholder="New Name">
+        <input type="number" id="new-age" placeholder="New Age">
+        <button type="submit">Update Profile</button>
+        <div id="profile-success" style="color: green"></div>
+        <div id="profile-error" style="color: red"></div>
+    </form>
+
+</body>
+
+</html>
