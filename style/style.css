@@ -100,6 +100,48 @@ label {
     padding: 10px;
 }
 
+#result{
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 70vw;
+}
+.calendar {
+    border-radius: 10px; /* Adjust the radius value as desired */
+    height: 364px; /* Set the desired height in pixels */
+    width: 80%; /* Set the desired width as needed */
+    margin: 0 auto; /* Center the calendar horizontally */
+}
+
+
+.doctor-card{
+    float: left; /* Float left to place it on the left side */
+    width: 50%; /* Adjust the width as needed */
+}
+
+.doctor-calendar{
+    float: right; /* Float left to place it on the right side */
+    width: 50%; /* Adjust the width as needed */
+}
+
+.doctor-container {
+    background-color: rgba(236, 236, 236, 0.8);
+    border-radius: 10px;
+    display: flex; /* Use flexbox to control layout */
+    justify-content: space-between; /* Separate doctorCard and doctorCalendar */
+    margin-bottom: 20px; /* Add margin for spacing between doctors */
+    border: 1px solid #ccc; /* Add a border for visual separation */
+    padding: 10px; /* Add padding for spacing within the container */
+}
+
+/* Style for the book appointment button */
+.book-appointment {
+    margin-top: 30px; /* Add margin at the top of the button */
+}
+
+
 /* footer {
     background-color: #333;
     color: #fff;
