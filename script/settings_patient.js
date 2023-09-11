@@ -1,12 +1,16 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
 import {
     getAuth,
     updateEmail,
-    updatePassword
+    updateProfile,
+    updatePassword,
+    onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
 import {
     getFirestore,
-    updateDoc
+    doc,
+    updateDoc,
+    deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
 
 // Your web app's Firebase configuration
@@ -28,10 +32,19 @@ const auth = getAuth(app);
 // Initialize Firestore
 const db = getFirestore(app);
 
-// Handle profile settings
-var user = auth.currentUser;
+let currentUser;
 
-// Function to change user's email
+// Restrict page to logged-in users
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUser = user;
+    } else {
+        window.location = 'index.html'; // If user is not logged in, redirect to login page
+    }
+});
+
+
+// Handle email change
 document
     .getElementById('email-form')
     .addEventListener('submit', async (event) => {
@@ -39,20 +52,20 @@ document
 
         const newEmail = document.getElementById('new-email').value;
 
-        updateEmail(newEmail)
+        updateEmail(currentUser, newEmail)
             .then(async () => {
 
                 // Changing user email field in Firestore
-                await updateDoc((db, "patients", user.uid), {
+                await updateDoc(doc(db, "patients", currentUser.uid), {
                     email: newEmail
                 })
 
-                console.log("Email change successful !")
+                console.log(`Email changed successfully to ${newEmail}.`)
                 // Clear any previous error messages
                 document.getElementById("email-error").textContent = "";
                 //  Display successful login message
                 document.getElementById("email-success").textContent =
-                    "Email changed succesfully !";
+                    "Email changed successfully !";
             })
             .catch((error) => {
                 console.error("Email change failed : ", error.message);
@@ -63,55 +76,107 @@ document
             });
     })
 
+document
+    .getElementById('password-form')
+    .addEventListener('submit', async (event) => {
+
+        event.preventDefault()
+        const newPassword = document.getElementById('new-password').value;
+
+        updatePassword(currentUser, newPassword)
+            .then(async () => {
+                console.log(`Password changed successfully.`)
+                // Clear any previous error messages
+                document.getElementById("password-error").textContent = "";
+                //  Display successful login message
+                document.getElementById("password-success").textContent = "Password changed successfully !";
+            })
+            .catch((error) => {
+                console.error("Password change failed : ", error.message);
+                // Clear any previous succeful error message
+                document.getElementById("password-success").textContent = "";
+                // Display error message
+                document.getElementById("password-error").textContent = "Password change failed."
+            })
+    })
 
 
-// Function to change user's password
-function changePassword() {
-    const newPassword = document.getElementById('newPassword').value;
+// Handle name change
+document
+    .getElementById('name-form')
+    .addEventListener('submit', async (event) => {
+        event.preventDefault()
 
-    updatePassword(newPassword)
-        .then(() => {
-            alert('Password updated successfully');
+        const newName = document.getElementById('new-name').value;
+
+        updateProfile(currentUser, {displayName : newName})
+            .then(async () => {
+
+                // Changing name field in Firestore
+                await updateDoc(doc(db, "patients", currentUser.uid), {
+                    name: newName
+                })
+
+                console.log(`Name changed successfully to ${newName}.`)
+                // Clear any previous error messages
+                document.getElementById("name-error").textContent = "";
+                //  Display successful login message
+                document.getElementById("name-success").textContent =
+                    "Name changed successfully !";
+            })
+            .catch((error) => {
+                console.error("Name change failed : ", error.message);
+                // Clear any previous succeful error message
+                document.getElementById("name-success").textContent = "";
+                // Display error message
+                document.getElementById("name-error").textContent = "Name change failed."
+            });
+    })
+
+// Handle age change
+document
+    .getElementById('age-form')
+    .addEventListener('submit', async (event) => {
+        event.preventDefault()
+        const newAge = document.getElementById('new-age').value;
+        // Changing age in Firestore
+        await updateDoc(doc(db, "patients", currentUser.uid), {
+            age: newAge
+        }).then(() => {
+            console.log(`Age changed successfully to ${newAge}.`)
+            // Clear any previous error messages
+            document.getElementById("age-error").textContent = "";
+            //  Display successful login message
+            document.getElementById("age-success").textContent =
+                "Age changed successfully !";
+        }).catch((error) => {
+            console.error("Name change failed : ", error.message);
+            // Clear any previous succeful error message
+            document.getElementById("age-success").textContent = "";
+            // Display error message
+            document.getElementById("age-error").textContent = "Age change failed."
         })
-        .catch((error) => {
-            alert(`Error updating password: ${error.message}`);
-        });
-}
+    })
 
-// Function to update user's profile (name and age)
-function updateProfile() {
-    const newName = document.getElementById('newName').value;
-    const newAge = document.getElementById('newAge').value;
+// Handle account deletion
+document
+    .getElementById("delete-button")
+    .addEventListener('click', async (event) => {
+        event.preventDefault()
+        if(confirm("Are you sure you want to delete your account ?")){
 
-    firestore.collection('patients').doc(user.uid)
-        .update({
-            name: newName,
-            age: parseInt(newAge)
-        })
-        .then(() => {
-            alert('Profile updated successfully');
-        })
-        .catch((error) => {
-            alert(`Error updating profile: ${error.message}`);
-        });
-}
+            // Delete account in Firestore
+            await deleteDoc(doc(db, "patients", currentUser.uid)).then(() => {
+                console.log("User successfully deleted from Firestore.")
+            }).catch((error) => {
+                console.error("Account deletion from Firestore failed : ", error.message)
+            })
 
-// Function to sign out
-function signOut() {
-    firebase.auth().signOut()
-        .then(() => {
-            alert('Sign Out Successful');
-        })
-        .catch((error) => {
-            alert(`Error signing out: ${error.message}`);
-        });
-}
-
-// Check if the user is logged in
-auth.onAuthStateChanged((new_user) => {
-    if (new_user) {
-        user = new_user;
-    } else {
-        // Redirect to the login page or handle the user being logged out
-    }
-});
+            currentUser.delete()
+                .then(async () => {
+                    console.log("User account successfully deleted.")
+                }).catch((error) => {
+                    console.error("Account deletion failed : ", error.message);
+            })
+        }
+    })

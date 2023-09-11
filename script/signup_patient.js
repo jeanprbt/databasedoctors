@@ -1,25 +1,14 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
-  import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
-
-  // Define the getErrorMessageForFirebaseErrorCode function
-  function getErrorMessageForFirebaseErrorCode(errorCode) {
-      switch (errorCode) {
-          case 'auth/email-already-in-use':
-              return 'The email address is already in use by another account.';
-          case 'auth/invalid-email':
-              return 'Invalid email address. Please check the email format.';
-          case 'auth/weak-password':
-              return 'The password is too weak. Please use a stronger password.';
-          case 'auth/user-not-found':
-              return 'User not found. Please check your email or register.';
-          case 'auth/wrong-password':
-              return 'Incorrect password. Please try again.';
-          // Add more cases for other error codes as needed
-          default:
-              return 'An error occurred. Please try again later.';
-      }
-  }
+  import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      updateProfile
+  } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
+  import {
+      getFirestore,
+      setDoc,
+      doc
+  } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
 
   // Your web app's Firebase configuration
   const firebaseConfig = {
@@ -41,7 +30,10 @@
   const db = getFirestore(app);
 
   // Handle User Registration
-  document.getElementById("registration-form").addEventListener('submit', async (e) => {
+  document
+      .getElementById("registration-form")
+      .addEventListener('submit', async (e) => {
+
       e.preventDefault();
 
       const email = document.getElementById('email').value;
@@ -51,8 +43,13 @@
 
       createUserWithEmailAndPassword(auth, email, password)
           .then(async (userCredential) => {
-              // Signed in 
+
               const user = userCredential.user;
+
+              // Adding name to Firebase auth
+              await updateProfile(user, {
+                  displayName: name
+              })
 
               // Storing user in patients database
               await setDoc(doc(db, "patients", user.uid), {
@@ -61,11 +58,12 @@
                   email: email
               });
 
-              console.log('Registration successful !');
+              console.log(`User successfully registered with email ${email} and name ${name}.`);
               // Clear any previous error messages
               document.getElementById('registration-error').textContent = '';
               // Display successful registration message
-              document.getElementById('registration-success').textContent = 'Registration successful !';
+              document.getElementById('registration-success').textContent = 'Registration successful !'
+
               // Redirect to user page
               window.location.href = "patient.html";
 
@@ -77,6 +75,23 @@
               // Display error messageÒ
               document.getElementById('registration-error').textContent = getErrorMessageForFirebaseErrorCode(error.code);
           });
-
-
   });
+
+  // Define the getErrorMessageForFirebaseErrorCode function
+  function getErrorMessageForFirebaseErrorCode(errorCode) {
+      switch (errorCode) {
+          case 'auth/email-already-in-use':
+              return 'The email address is already in use by another account.';
+          case 'auth/invalid-email':
+              return 'Invalid email address. Please check the email format.';
+          case 'auth/weak-password':
+              return 'The password is too weak. Please use a stronger password.';
+          case 'auth/user-not-found':
+              return 'User not found. Please check your email or register.';
+          case 'auth/wrong-password':
+              return 'Incorrect password. Please try again.';
+          // Add more cases for other error codes as needed
+          default:
+              return 'An error occurred. Please try again later.';
+      }
+  }
