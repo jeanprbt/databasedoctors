@@ -80,6 +80,7 @@ for (let i = 0; i < allowedPlaces.length; i++) {
     selectCity.appendChild(option);
 }
 
+//Define an array of specialities
 const specialities = [
     "All Specialities",
     "Cardiology",
@@ -121,11 +122,6 @@ searchForm.addEventListener('submit', async (e) => {
     if (speciality !== 'All Specialities') {
         answer = query(answer, where('speciality', '==', speciality));
     }
-
-    //TODO, gérer la date
-    //if (date !== '') {
-    //answer = ;
-    //}
 
     if (city !== 'All Cities') {
         answer = query(answer, where('city', '==', city));
@@ -192,12 +188,9 @@ async function displaySearchResults(querySnapshot) {
         doctorCard.appendChild(doctorCity);
         doctorCard.appendChild(doctorEmail); 
 
-        //Append elements to the calendar division
+        //Append element to the calendar division
         doctorCalendar.appendChild(calendarDiv); 
-
-        //DO THE CALENDER 
-        const calendar = await createCalendar(calendarDiv, doc)
-        calendar.render();
+        const calendar = createCalendar(calendarDiv, doc)
 
         //Put both parts together
         doctorContainer.appendChild(doctorCard); 
@@ -210,10 +203,11 @@ async function displaySearchResults(querySnapshot) {
 
 //Function to display the calendar
 async function createCalendar(calendarDiv, doc){
+
     // Create an array to store the events for the doctor's calendar
     const events = [];
 
-    // Define the time slots (8 AM to 12 PM and 1 PM to 5 PM) in one-hour increments
+    // Define the time slots 
     const timeSlots = [
         { start: '08:00', end: '09:00' },
         { start: '09:00', end: '10:00' },
@@ -225,18 +219,19 @@ async function createCalendar(calendarDiv, doc){
         { start: '16:00', end: '17:00' },
     ];
 
-    // Fetch the used slots from the database (replace with your database query)
+    // Fetch the used slots from the database
     const usedSlotsQuery = query(collection(db,'usedSlots'), where('doctorId', '==', doc.id));
     const usedSlotsSnapshot = await getDocs(usedSlotsQuery);
     const usedSlots = [];
 
-    //TODO : upload the used slots for the doctor
+    //upload the used slots for the doctor
     usedSlotsSnapshot.forEach((slotDoc) => {
         const slotData = slotDoc.data();
-        usedSlots.push(slotData.slotStartTime); // Assuming 'slot' is the field containing the slot start time
+        usedSlots.push(slotData.slotStartTime); 
     });
 
 
+    //show availabilitites for the 50 next days
     for (let i = 0; i <= 50; i++) {
         const currentDay = new Date();
         currentDay.setDate(currentDay.getDate() + i);
@@ -256,10 +251,10 @@ async function createCalendar(calendarDiv, doc){
                     return usedSlotDate.getTime() === startDate.getTime();
                 })) {
                     const event = {
-                        title: 'Available Slot', // You can customize the title as needed
+                        title: 'Available Slot', 
                         start: startDate.toISOString(),
                         end: endDate.toISOString(),
-                        dow: [currentDay.getDay()], // Day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+                        dow: [currentDay.getDay()],
                     };
 
                     events.push(event);
@@ -268,36 +263,33 @@ async function createCalendar(calendarDiv, doc){
         }
     }
 
-    const calendar = new FullCalendar.Calendar(calendarDiv, {
-        // Your FullCalendar options go here
-        // For example, you can define events as available appointment slots
+    let calendar; 
+    calendar = new FullCalendar.Calendar(calendarDiv, {
         events: events,
         initialView: 'timeGridWeek',
-        // Customize the slot duration and other options as needed
         themeSystem: 'rounded',
-        slotDuration: '01:00', // Each slot represents one hour
+        slotDuration: '01:00', 
         slotLabelInterval: { hours: 1 }, // Show hour labels on each slot
-        allDaySlot: false, // Hide the all-day slot
-        nowIndicator: true, // Show a "now" indicator line
-        columnHeaderFormat: { weekday: 'long' }, // Show full weekday names
-        slotMinTime: '08:00:00', // Display slots starting from 8:00 AM
-        slotMaxTime: '17:00:00', // Display slots ending at 6:00 PM
+        allDaySlot: false, 
+        nowIndicator: true, 
+        columnHeaderFormat: { weekday: 'long' }, 
+        slotMinTime: '08:00:00', 
+        slotMaxTime: '17:00:00', 
         hiddenDays: [0, 6], // Hide Sunday (0) and Saturday (6)
         eventContent: function(arg) {
-            return 'book'; // Return an empty string to hide event titles
+            return 'book'; // written string on available slots
         },
+
+        //this function is called when you click on an available slot
         eventClick: function(info) {
-            // This function is called for each event when it is rendered in the calendar
             const event = info.event; // The event object
-            const element = info.el;   // The HTML element representing the event
-            const slotStartTime = event.start.toISOString(); // Start time of the clicked event
-            const doctorId = doc.id; // Replace with the actual doctor's ID
+            const slotStartTime = event.start.toISOString();
+            const doctorId = doc.id; 
             const eventDate = formatTime(event.start);
             console.log(`Event booked: ${eventDate}`)
             
-            // Add the clicked slot to the "usedSlots" database (replace this with your Firebase update logic)
-            // Assume you have a Firestore collection "usedSlots" with a field "doctorId" and "slotStartTime"
-            // Make sure to replace this with your Firestore code to add the slot to the database
+            //consider the event as an appointment between the patient and doctor and add it 
+            //to used slots 
             const usedSlotsCollection = collection(db, 'usedSlots');
             const newUsedSlot = {
                 doctorId: doctorId,
@@ -307,16 +299,17 @@ async function createCalendar(calendarDiv, doc){
 
             addDoc(usedSlotsCollection, newUsedSlot)
             .then(() => {
-                // Slot added successfully, you can show a success message if needed
+                // Slot added successfully
                 console.log('Slot added to usedSlots:', slotStartTime);
+                calendar.render();
             })
             .catch((error) => {
-                // Handle any errors that occur during the database update
                 console.error('Error adding slot to usedSlots:', error);
             });
         },
     });
 
+    await calendar.render(); 
     return calendar; 
 }
 
