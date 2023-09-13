@@ -12,6 +12,7 @@ import {
     query, 
     addDoc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
+import { signOutButton } from "./utils.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -32,6 +33,14 @@ const auth = getAuth(app);
 // Initialize Firestore
 const db = getFirestore(app);
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Utils functions 
+
+// Handle sign-out
+signOutButton(document.getElementById('sign-out'), auth);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // Restrict page to logged-in users
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -43,16 +52,6 @@ onAuthStateChanged(auth, (user) => {
     } else {
         window.location = 'index.html'; // If user is not logged in, redirect to login page
     }
-});
-
-// Handle sign-out
-document.getElementById('sign-out')
-    .addEventListener('click', () => {
-        signOut(auth).then(() => {
-            console.log("Sign out successful.");
-        }).catch((error) => {
-            console.error("An error happened during sign out.");
-        });
 });
 
 //Function to display the calendar

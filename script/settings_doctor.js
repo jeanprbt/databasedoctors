@@ -13,7 +13,7 @@ import {
     deleteDoc,
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
-import { signOutButton } from "./utils.js";
+import { addCitiesToSelect, addSpecialitiesToSelect, signOutButton } from "./utils.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -24,8 +24,6 @@ const firebaseConfig = {
     messagingSenderId: "771888139690",
     appId: "1:771888139690:web:6b1e5ee383ec06df976fd3",
 };
-
-
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -42,8 +40,15 @@ const db = getFirestore(app);
 // Handle sign-out
 signOutButton(document.getElementById('sign-out'), auth);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Add the options to the select element for city
+const selectCity = document.getElementById("city");
+addCitiesToSelect(selectCity)
 
+// Add the options to the select element
+const select = document.getElementById("speciality");
+addSpecialitiesToSelect(select);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 let currentUser;
 
@@ -55,9 +60,11 @@ onAuthStateChanged(auth, (user) => {
         // Fill form fields with current data
         document.getElementById('new-email').value = currentUser.email;
         document.getElementById('new-name').value = currentUser.displayName;
-        getDoc(doc(db, "patients", currentUser.uid)).then((doc) => {
+        getDoc(doc(db, "doctors", currentUser.uid)).then((doc) => {
             if (doc.exists()) {
                 document.getElementById('new-age').value = doc.data().age;
+                document.getElementById('city').value = doc.data().city;
+                document.getElementById('speciality').value = doc.data().speciality;
             } else {
                 console.log("No such document!");
             }
@@ -82,7 +89,7 @@ document
             .then(async () => {
 
                 // Changing user email field in Firestore
-                await updateDoc(doc(db, "patients", currentUser.uid), {
+                await updateDoc(doc(db, "doctors", currentUser.uid), {
                     email: newEmail
                 })
 
@@ -139,7 +146,7 @@ document
             .then(async () => {
 
                 // Changing name field in Firestore
-                await updateDoc(doc(db, "patients", currentUser.uid), {
+                await updateDoc(doc(db, "doctors", currentUser.uid), {
                     name: newName
                 })
 
@@ -166,7 +173,7 @@ document
         event.preventDefault()
         const newAge = document.getElementById('new-age').value;
         // Changing age in Firestore
-        await updateDoc(doc(db, "patients", currentUser.uid), {
+        await updateDoc(doc(db, "doctors", currentUser.uid), {
             age: newAge
         }).then(() => {
             console.log(`Age changed successfully to ${newAge}.`)
@@ -184,6 +191,55 @@ document
         })
     })
 
+document
+    .getElementById('city-form')
+    .addEventListener('submit', async (event) => {
+        event.preventDefault()
+        const newCity = document.getElementById('city').value;
+        // Changing city in Firestore
+        await updateDoc(doc(db, "doctors", currentUser.uid), {
+            city: newCity
+        }).then(() => {
+            console.log(`City changed successfully to ${newCity}.`)
+            // Clear any previous error messages
+            document.getElementById("city-error").textContent = "";
+            //  Display successful login message
+            document.getElementById("city-success").textContent =
+                "City changed successfully !";
+        }).catch((error) => {
+            console.error("City change failed : ", error.message);
+            // Clear any previous succeful error message
+            document.getElementById("city-success").textContent = "";
+            // Display error message
+            document.getElementById("city-error").textContent = "City change failed."
+        })
+    })
+
+document
+    .getElementById('speciality-form')
+    .addEventListener('submit', async (event) => {
+        event.preventDefault()
+        const newSpeciality = document.getElementById('speciality').value;
+        // Changing speciality in Firestore
+        await updateDoc(doc(db, "doctors", currentUser.uid), {
+            speciality: newSpeciality
+        }).then(() => {
+            console.log(`Speciality changed successfully to ${newSpeciality}.`)
+            // Clear any previous error messages
+            document.getElementById("speciality-error").textContent = "";
+            //  Display successful login message
+            document.getElementById("speciality-success").textContent =
+                "Speciality changed successfully !";
+        }).catch((error) => {
+            console.error("Speciality change failed : ", error.message);
+            // Clear any previous succeful error message
+            document.getElementById("speciality-success").textContent = "";
+            // Display error message
+            document.getElementById("speciality-error").textContent = "Speciality change failed."
+        })
+    })
+
+
 // Handle account deletion
 document
     .getElementById("delete-button")
@@ -192,7 +248,7 @@ document
         if(confirm("Are you sure you want to delete your account ?")){
 
             // Delete account in Firestore
-            await deleteDoc(doc(db, "patients", currentUser.uid)).then(() => {
+            await deleteDoc(doc(db, "doctors", currentUser.uid)).then(() => {
                 console.log("User successfully deleted from Firestore.")
             }).catch((error) => {
                 console.error("Account deletion from Firestore failed : ", error.message)

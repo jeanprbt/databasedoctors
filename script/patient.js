@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
 import {
     getAuth,
-    signOut,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
 import {
@@ -12,6 +11,7 @@ import {
     query, 
     addDoc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
+import { addCitiesAndAllCitiesToSelect, addSpecialitiesAndAllSpecialitiesToSelect, signOutButton } from "./utils.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -44,66 +44,21 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Utils functions 
+
 // Handle sign-out
-document.getElementById('sign-out')
-    .addEventListener('click', () => {
-        signOut(auth).then(() => {
-            console.log("Sign out successful.");
-        }).catch((error) => {
-            console.error("An error happened during sign out.");
-        });
-});
-
-
-// Define an array of allowed cities in Sweden
-const allowedPlaces = [
-    "All Cities",
-    "Stockholm",
-    "Gothenburg",
-    "Malmö",
-    "Uppsala",
-    "Västerås",
-    "Örebro",
-    "Linköping",
-    "Helsingborg",
-    "Jönköping",
-    "Norrköping",
-    "Lund",
-    "Umeå",
-];
+signOutButton(document.getElementById('sign-out'), auth);
+    
 // Add the options to the select element for city
 const selectCity = document.getElementById("city");
-for (let i = 0; i < allowedPlaces.length; i++) {
-    const option = document.createElement("option");
-    option.value = allowedPlaces[i];
-    option.text = allowedPlaces[i];
-    selectCity.appendChild(option);
-}
-
-//Define an array of specialities
-const specialities = [
-    "All Specialities",
-    "Cardiology",
-    "Dentistry",
-    "Dermatology",
-    "Orthopedics",
-    "Neurology",
-    "Pediatrics",
-    "Oncology",
-    "Psychiatry",
-    "Radiology",
-    "Ophthalmology",
-    "Gynecology",
-];
+addCitiesAndAllCitiesToSelect(selectCity);
 
 // Add the options to the select element
-const select = document.getElementById("speciality");
-for (let i = 0; i < specialities.length; i++) {
-    const option = document.createElement("option");
-    option.value = specialities[i];
-    option.text = specialities[i];
-    select.appendChild(option);
-}
+const selectSpeciacilities = document.getElementById("speciality");
+addSpecialitiesAndAllSpecialitiesToSelect(selectSpeciacilities);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 // Get the doctors database
 const doctorsDB = collection(db, 'doctors');
