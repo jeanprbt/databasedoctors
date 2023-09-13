@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
 import {
     getAuth,
     onAuthStateChanged
@@ -8,10 +8,10 @@ import {
     getDocs,
     collection,
     where,
-    query, 
+    query,
     addDoc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
-import { addCitiesAndAllCitiesToSelect, addSpecialitiesAndAllSpecialitiesToSelect, signOutButton } from "./utils.js";
+import {addCitiesAndAllCitiesToSelect, addSpecialitiesAndAllSpecialitiesToSelect, signOutButton} from "./utils.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -49,7 +49,7 @@ onAuthStateChanged(auth, (user) => {
 
 // Handle sign-out
 signOutButton(document.getElementById('sign-out'), auth);
-    
+
 // Add the options to the select element for city
 const selectCity = document.getElementById("city");
 addCitiesAndAllCitiesToSelect(selectCity);
@@ -92,15 +92,15 @@ searchForm.addEventListener('submit', async (e) => {
 async function displaySearchResults(querySnapshot) {
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = ''; // Clear previous results
-    const resultTitle = document.createElement('h2'); 
+    const resultTitle = document.createElement('h2');
 
     if (querySnapshot.empty) {
         resultTitle.textContent = 'No doctor found for you requirements...';
         resultDiv.appendChild(resultTitle);
         return;
-    }else{
-        resultTitle.textContent = 'Results : '; 
-        resultDiv.appendChild(resultTitle); 
+    } else {
+        resultTitle.textContent = 'Results : ';
+        resultDiv.appendChild(resultTitle);
     }
 
     querySnapshot.forEach(async (doc) => {
@@ -116,8 +116,8 @@ async function displaySearchResults(querySnapshot) {
         doctorCard.classList.add('doctor-card');
 
         //Create elements for calendar + button
-        const doctorCalendar = document.createElement('div'); 
-        doctorCalendar.classList.add('doctor-calendar'); 
+        const doctorCalendar = document.createElement('div');
+        doctorCalendar.classList.add('doctor-calendar');
 
         // Add doctor information to the card
 
@@ -130,8 +130,8 @@ async function displaySearchResults(querySnapshot) {
         const doctorCity = document.createElement('p');
         doctorCity.textContent = `City: ${doctorData.city}`;
 
-        const doctorEmail = document.createElement('p'); 
-        doctorEmail.textContent = `Contact : ${doctorData.email}`; 
+        const doctorEmail = document.createElement('p');
+        doctorEmail.textContent = `Contact : ${doctorData.email}`;
 
         // Create a div for the calendar
         const calendarDiv = document.createElement('div');
@@ -141,15 +141,15 @@ async function displaySearchResults(querySnapshot) {
         doctorCard.appendChild(doctorName);
         doctorCard.appendChild(doctorSpeciality);
         doctorCard.appendChild(doctorCity);
-        doctorCard.appendChild(doctorEmail); 
+        doctorCard.appendChild(doctorEmail);
 
         //Append element to the calendar division
-        doctorCalendar.appendChild(calendarDiv); 
+        doctorCalendar.appendChild(calendarDiv);
         const calendar = createCalendar(calendarDiv, doc)
 
         //Put both parts together
-        doctorContainer.appendChild(doctorCard); 
-        doctorContainer.appendChild(doctorCalendar); 
+        doctorContainer.appendChild(doctorCard);
+        doctorContainer.appendChild(doctorCalendar);
 
         // Append the full doctor info to the appointmentsDiv
         resultDiv.appendChild(doctorContainer);
@@ -157,32 +157,32 @@ async function displaySearchResults(querySnapshot) {
 }
 
 //Function to display the calendar
-async function createCalendar(calendarDiv, doc){
+async function createCalendar(calendarDiv, doc) {
 
     // Create an array to store the events for the doctor's calendar
     const events = [];
 
     // Define the time slots 
     const timeSlots = [
-        { start: '08:00', end: '09:00' },
-        { start: '09:00', end: '10:00' },
-        { start: '10:00', end: '11:00' },
-        { start: '11:00', end: '12:00' },
-        { start: '13:00', end: '14:00' },
-        { start: '14:00', end: '15:00' },
-        { start: '15:00', end: '16:00' },
-        { start: '16:00', end: '17:00' },
+        {start: '08:00', end: '09:00'},
+        {start: '09:00', end: '10:00'},
+        {start: '10:00', end: '11:00'},
+        {start: '11:00', end: '12:00'},
+        {start: '13:00', end: '14:00'},
+        {start: '14:00', end: '15:00'},
+        {start: '15:00', end: '16:00'},
+        {start: '16:00', end: '17:00'},
     ];
 
     // Fetch the used slots from the database
-    const usedSlotsQuery = query(collection(db,'usedSlots'), where('doctorId', '==', doc.id));
+    const usedSlotsQuery = query(collection(db, 'usedSlots'), where('doctorId', '==', doc.id));
     const usedSlotsSnapshot = await getDocs(usedSlotsQuery);
     const usedSlots = [];
 
     //upload the used slots for the doctor
     usedSlotsSnapshot.forEach((slotDoc) => {
         const slotData = slotDoc.data();
-        usedSlots.push(slotData.slotStartTime); 
+        usedSlots.push(slotData.slotStartTime);
     });
 
 
@@ -206,7 +206,7 @@ async function createCalendar(calendarDiv, doc){
                     return usedSlotDate.getTime() === startDate.getTime();
                 })) {
                     const event = {
-                        title: 'Available Slot', 
+                        title: 'Available Slot',
                         start: startDate.toISOString(),
                         end: endDate.toISOString(),
                         dow: [currentDay.getDay()],
@@ -218,31 +218,31 @@ async function createCalendar(calendarDiv, doc){
         }
     }
 
-    let calendar; 
+    let calendar;
     calendar = new FullCalendar.Calendar(calendarDiv, {
         events: events,
         initialView: 'timeGridWeek',
         themeSystem: 'rounded',
-        slotDuration: '01:00', 
-        slotLabelInterval: { hours: 1 }, // Show hour labels on each slot
-        allDaySlot: false, 
-        nowIndicator: true, 
-        columnHeaderFormat: { weekday: 'long' }, 
-        slotMinTime: '08:00:00', 
-        slotMaxTime: '17:00:00', 
+        slotDuration: '01:00',
+        slotLabelInterval: {hours: 1}, // Show hour labels on each slot
+        allDaySlot: false,
+        nowIndicator: true,
+        columnHeaderFormat: {weekday: 'long'},
+        slotMinTime: '08:00:00',
+        slotMaxTime: '17:00:00',
         hiddenDays: [0, 6], // Hide Sunday (0) and Saturday (6)
-        eventContent: function(arg) {
+        eventContent: function (arg) {
             return 'book'; // written string on available slots
         },
 
         //this function is called when you click on an available slot
-        eventClick: function(info) {
+        eventClick: function (info) {
             const event = info.event; // The event object
             const slotStartTime = event.start.toISOString();
-            const doctorId = doc.id; 
+            const doctorId = doc.id;
             const eventDate = formatTime(event.start);
             console.log(`Event booked: ${eventDate}`)
-            
+
             //consider the event as an appointment between the patient and doctor and add it 
             //to used slots 
             const usedSlotsCollection = collection(db, 'usedSlots');
@@ -253,19 +253,19 @@ async function createCalendar(calendarDiv, doc){
             };
 
             addDoc(usedSlotsCollection, newUsedSlot)
-            .then(() => {
-                // Slot added successfully
-                console.log('Slot added to usedSlots:', slotStartTime);
-                calendar.render();
-            })
-            .catch((error) => {
-                console.error('Error adding slot to usedSlots:', error);
-            });
+                .then(() => {
+                    // Slot added successfully
+                    console.log('Slot added to usedSlots:', slotStartTime);
+                    calendar.render();
+                })
+                .catch((error) => {
+                    console.error('Error adding slot to usedSlots:', error);
+                });
         },
     });
 
-    await calendar.render(); 
-    return calendar; 
+    await calendar.render();
+    return calendar;
 }
 
 
@@ -276,6 +276,6 @@ function formatTime(date) {
     const year = date.getFullYear();
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
-    
+
     return `${day}-${month}-${year} ${hours}:${minutes}`;
 }
