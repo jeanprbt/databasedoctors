@@ -162,7 +162,7 @@ async function createCalendar(calendarDiv, doc) {
     // Create an array to store the events for the doctor's calendar
     const events = [];
 
-    // Define the time slots 
+    // Define the time slots
     const timeSlots = [
         {start: '08:00', end: '09:00'},
         {start: '09:00', end: '10:00'},
@@ -206,13 +206,25 @@ async function createCalendar(calendarDiv, doc) {
                     return usedSlotDate.getTime() === startDate.getTime();
                 })) {
                     const event = {
-                        title: 'Available Slot',
+                        title: 'Available',
                         start: startDate.toISOString(),
                         end: endDate.toISOString(),
                         dow: [currentDay.getDay()],
                     };
 
                     events.push(event);
+                } else {
+                    // This slot is already used
+                    const event = {
+                        title: 'Used Slot',
+                        start: startDate.toISOString(),
+                        end: endDate.toISOString(),
+                        dow: [currentDay.getDay()],
+                        backgroundColor: 'grey', // Set the background color to grey
+                    };
+                
+                    events.push(event);
+                    
                 }
             });
         }
@@ -232,8 +244,18 @@ async function createCalendar(calendarDiv, doc) {
         slotMaxTime: '17:00:00',
         hiddenDays: [0, 6], // Hide Sunday (0) and Saturday (6)
         eventContent: function (arg) {
-            return 'book'; // written string on available slots
+            if (arg.event.backgroundColor === 'grey') {
+                return 'Booked';
+            } else {
+                return 'Available';
+            }
         },
+        eventRender: function (info) {
+        if (info.event.backgroundColor === 'grey') {
+            // Disable click for used slots
+            info.el.classList.add('fc-non-clickable');
+        }
+    },
 
         //this function is called when you click on an available slot
         eventClick: function (info) {
@@ -241,10 +263,14 @@ async function createCalendar(calendarDiv, doc) {
             const slotStartTime = event.start.toISOString();
             const doctorId = doc.id;
             const eventDate = formatTime(event.start);
+            
+            if (event.backgroundColor === 'grey') {
+                console.log(`Event is already booked: ${eventDate}`);
+                return; // Exit the function if the slot is already booked
+            }
             console.log(`Event booked: ${eventDate}`)
-
-            //consider the event as an appointment between the patient and doctor and add it 
-            //to used slots 
+            //consider the event as an appointment between the patient and doctor and add it
+            //to used slots
             const usedSlotsCollection = collection(db, 'usedSlots');
             const newUsedSlot = {
                 doctorId: doctorId,
@@ -256,11 +282,16 @@ async function createCalendar(calendarDiv, doc) {
                 .then(() => {
                     // Slot added successfully
                     console.log('Slot added to usedSlots:', slotStartTime);
+                    //make the cell grey
+                    event.setProp('backgroundColor', 'grey');
+                    
+                
                     calendar.render();
                 })
                 .catch((error) => {
                     console.error('Error adding slot to usedSlots:', error);
                 });
+            
         },
     });
 
