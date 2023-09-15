@@ -55,15 +55,15 @@ async function displayAppointments(querySnapshot) {
     const appointmentsDiv = document.getElementById('appointments');
     appointmentsDiv.innerHTML = ''; // Clear previous results
     appointmentsDiv.style.visibility = 'visible';
-    const apppointmentTitle = document.createElement('h2');
+    const appointmentTitle = document.createElement('h2');
 
     if (querySnapshot.empty) {
-        resultTitle.textContent = 'No doctor found for your requirements...';
-        resultDiv.appendChild(resultTitle);
+        appointmentTitle.textContent = 'No appointments';
+        appointmentsDiv.appendChild(resultTitle);
         return;
     } else {
-        resultTitle.textContent = 'Results : ';
-        resultDiv.appendChild(resultTitle);
+        appointmentTitleTitle.textContent = 'My appointments';
+        appointmentTitleDiv.appendChild(resultTitle);
     }
 
     //iterate over each

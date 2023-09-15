@@ -14,9 +14,11 @@ import {
     addDoc,
     deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
-import {signOutButton} from "./utils.js";
+import {signOutButton,
+        formatTime
+} from "./utils.js";
 
-// Your web app's Firebase configuration
+//Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDeiRIFp3pz2fNxMlGCsTc-NA7GviQghZU",
     authDomain: "database-project-bd7e8.firebaseapp.com",
@@ -26,13 +28,9 @@ const firebaseConfig = {
     appId: "1:771888139690:web:6b1e5ee383ec06df976fd3",
 };
 
-// Initialize Firebase
+// Initialize Firebase, Firebase Authentication and Firestore
 const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase Authentication
 const auth = getAuth(app);
-
-// Initialize Firestore
 const db = getFirestore(app);
 
 // Restrict page to logged-in doctor users
@@ -94,7 +92,7 @@ async function createCalendar(calendarDiv,doc) {
     });
 
 
-    //show availabilitites for the 50 next days
+    //show availabilies for the 50 next days
     for (let i = 0; i <= 50; i++) {
         const currentDay = new Date();
         currentDay.setDate(currentDay.getDate() + i);
@@ -106,6 +104,22 @@ async function createCalendar(calendarDiv,doc) {
                 startDate.setHours(slot.start.split(':')[0], slot.start.split(':')[1], 0, 0);
                 const endDate = new Date(currentDay);
                 endDate.setHours(slot.end.split(':')[0], slot.end.split(':')[1], 0, 0);
+
+                var available = true;
+                var doctor_app = false;
+                usedSlots.forEach((usedSlot) =>{
+                    const usedSlotDate = new Date(usedSlot.slotStartTime);
+                    if (usedSlotDate.getTime() === startDate.getTime()){
+                        available = false;
+                        console.log(usedSlot.patientId,usedSlot.doctorId);
+
+                        if (usedSlot.patientId === usedSlot.doctorId){
+                            doctor_app = true;
+                        }
+                    }
+
+                });
+                console.log('Available:', available, 'Docteur App:', doctor_app);
 
                 // Check if the slot is not in the usedSlots array (i.e., it's available)
                 if (available){
@@ -204,11 +218,10 @@ async function createCalendar(calendarDiv,doc) {
             }
 
             console.log(`Event booked: ${eventDate}`)
-            //consider the event as an appointment between the patient and doctor and add it
-            //to used slots
+            //consider the event as an appointment between the doctor and himself
             const usedSlotsCollection = collection(db, 'usedSlots');
             const newUsedSlot = {
-                doctorId: doctorId,
+                doctorId: auth.currentUser.uid,
                 slotStartTime: slotStartTime,
                 patientId: auth.currentUser.uid,
             };
@@ -246,18 +259,6 @@ async function createCalendar(calendarDiv,doc) {
 
     await calendar.render();
     return calendar;
-}
-
-
-// Function to format date and time to be readable
-function formatTime(date) {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based, so we add 1
-    const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-
-    return `${day}-${month}-${year} ${hours}:${minutes}`;
 }
 
 document.addEventListener("DOMContentLoaded", function () {

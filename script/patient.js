@@ -21,7 +21,7 @@ import {
     formatTime
 } from "./utils.js";
 
-// Your web app's Firebase configuration
+// Web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDeiRIFp3pz2fNxMlGCsTc-NA7GviQghZU",
     authDomain: "database-project-bd7e8.firebaseapp.com",
@@ -31,13 +31,9 @@ const firebaseConfig = {
     appId: "1:771888139690:web:6b1e5ee383ec06df976fd3",
 };
 
-// Initialize Firebase
+// Initializations of Firebase, Firebase Authentication and Firestore
 const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase Authentication
 const auth = getAuth(app);
-
-// Initialize Firestore
 const db = getFirestore(app);
 
 // Restrict page to logged-in patient users
@@ -72,6 +68,7 @@ const selectSpecialities = document.getElementById("speciality");
 addSpecialitiesAndAllSpecialitiesToSelect(selectSpecialities);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//THIS PART TAKES CARE OF GETTING THE PATIENT QUERY AND SEARCHING DOCTORS
 
 // Get the doctors database
 const doctorsDB = collection(db, 'doctors');
@@ -81,27 +78,25 @@ searchForm.addEventListener('submit', async (e) => {
 
     // Collect user input
     const speciality = document.getElementById('speciality').value;
-    // const date = document.getElementById('date').value;
     const city = document.getElementById('city').value;
 
     // Query the Firebase database based on user input
     let answer = query(doctorsDB);
-
     if (speciality !== 'All Specialities') {
         answer = query(answer, where('speciality', '==', speciality));
     }
-
     if (city !== 'All Cities') {
         answer = query(answer, where('city', '==', city));
     }
+
     // Execute the query
     const querySnapshot = await getDocs(answer);
 
     // Display the search results
-    displaySearchResults(querySnapshot);
+    await displaySearchResults(querySnapshot);
 });
 
-//Function to display
+//Function to display the doctors found
 async function displaySearchResults(querySnapshot) {
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = ''; // Clear previous results
@@ -117,7 +112,8 @@ async function displaySearchResults(querySnapshot) {
         resultDiv.appendChild(resultTitle);
     }
 
-    querySnapshot.forEach(async (doc) => {
+    //iterate over each
+    querySnapshot.forEach((doc) => {
 
         const doctorData = doc.data();
 
@@ -159,7 +155,7 @@ async function displaySearchResults(querySnapshot) {
 
         //Append element to the calendar division
         doctorCalendar.appendChild(calendarDiv);
-        const calendar = createCalendar(calendarDiv, doc)
+        createCalendar(calendarDiv, doc);
 
         //Put both parts together
         doctorContainer.appendChild(doctorCard);
@@ -196,7 +192,12 @@ async function createCalendar(calendarDiv, doc) {
     //upload the used slots for the doctor
     usedSlotsSnapshot.forEach((slotDoc) => {
         const slotData = slotDoc.data();
-        usedSlots.push(slotData.slotStartTime);
+        const slotTuple = {
+            slotStartTime: slotData.slotStartTime,
+            patientId: slotData.patientId,
+            doctorId: slotData.doctorId
+        };
+        usedSlots.push(slotTuple);
     });
 
 
@@ -213,28 +214,36 @@ async function createCalendar(calendarDiv, doc) {
                 const endDate = new Date(currentDay);
                 endDate.setHours(slot.end.split(':')[0], slot.end.split(':')[1], 0, 0);
 
-                // Check if the slot is not in the usedSlots array (i.e., it's available)
-                if (!usedSlots.some(usedSlot => {
-                    // Compare both date and time
-                    const usedSlotDate = new Date(usedSlot);
-                    return usedSlotDate.getTime() === startDate.getTime();
-                })) {
+                var available = true;
+                var booked_by_self = false;
+                usedSlots.forEach((usedSlot => {
+                    const usedSlotDate = new Date(usedSlot.slotStartTime);
+                    if(usedSlotDate.getTime() === startDate.getTime()){
+                        available = false;
+                        if(usedSlot.patientId === auth.currentUser.uid){
+                            booked_by_self = true;
+                        }
+                    }
+                }));
+
+                // if the slot is available for booking
+                if (available) {
                     const event = {
                         title: 'Available',
                         start: startDate.toISOString(),
                         end: endDate.toISOString(),
                         dow: [currentDay.getDay()],
                     };
-
                     events.push(event);
-                } else {
-                    // This slot is already used
+
+                //if the slot is already booked by patient
+                } else if (booked_by_self){
                     const event = {
-                        title: 'Used Slot',
+                        title: 'BOOKED',
                         start: startDate.toISOString(),
                         end: endDate.toISOString(),
                         dow: [currentDay.getDay()],
-                        backgroundColor: 'grey', // Set the background color to grey
+                        backgroundColor: 'green', // Set the background color to green
                     };
                 
                     events.push(event);
@@ -263,18 +272,12 @@ async function createCalendar(calendarDiv, doc) {
             right: ',timeGridWeek,timeGridDay', // Customize the right section of the toolbar
         },
         eventContent: function (arg) {
-            if (arg.event.backgroundColor === 'grey') {
-                return 'Booked';
+            if (arg.event.backgroundColor === 'green') {
+                return 'BOOKED';
             } else {
-                return 'Available';
+                return 'BOOK';
             }
         },
-        eventRender: function (info) {
-        if (info.event.backgroundColor === 'grey') {
-            // Disable click for used slots
-            info.el.classList.add('fc-non-clickable');
-        }
-    },
 
         //this function is called when you click on an available slot
         eventClick: function (info) {
@@ -299,7 +302,7 @@ async function createCalendar(calendarDiv, doc) {
                 calendar.render();
                 return; // E
             }
-            console.log(`Event booked: ${eventDate}`)
+
             //consider the event as an appointment between the patient and doctor and add it
             //to used slots
             const usedSlotsCollection = collection(db, 'usedSlots');
@@ -312,12 +315,9 @@ async function createCalendar(calendarDiv, doc) {
             addDoc(usedSlotsCollection, newUsedSlot)
                 .then(() => {
                     // Slot added successfully
-                    console.log('Slot added to usedSlots:', slotStartTime);
-                    //make the cell grey
-                    event.setProp('backgroundColor', 'grey');
-                    
-                
-                    calendar.render();
+                    //make the cell green
+                    event.setProp('backgroundColor', 'green');
+                    //calendar.render();
                 })
                 .catch((error) => {
                     console.error('Error adding slot to usedSlots:', error);
