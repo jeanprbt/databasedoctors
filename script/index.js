@@ -2,6 +2,7 @@
  import {
      getAuth,
      signInWithEmailAndPassword,
+     onAuthStateChanged
  } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
  import {
      getFirestore,
@@ -29,6 +30,32 @@
  // Initialize Firestore
  const db = getFirestore(app);
 
+ onAuthStateChanged(auth, async (user) => {
+    if(user){
+        document.getElementById("login").style.display = "none";
+        document.getElementById("homepage").style.display = "inline";
+    } else {
+        document.getElementById("login").style.display= "flex";
+        document.getElementById("homepage").style.display = "none";
+    }
+ })
+
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ // Utils functions
+
+ // Handle sign-out
+ signOutButton(document.getElementById('sign-out'), auth);
+
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ // Handle sign-up redirection
+ document.getElementById("new-patient").addEventListener("click", function(){
+     window.location.href = "signup_patient.html";
+ })
+ document.getElementById("new-doctor").addEventListener("click", function(){
+     window.location.href = "signup_doctor.html";
+ })
+
  // Handle User Login
  document
      .getElementById("login-form")
@@ -37,7 +64,6 @@
 
          var email = document.getElementById("login-email").value;
          var password = document.getElementById("login-password").value;
-
 
          // Log in user with Firebase Authentication
          signInWithEmailAndPassword(auth, email, password)

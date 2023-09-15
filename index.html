@@ -9,30 +9,56 @@
 </head>
 
 <body>
+
+<section id="homepage" style="display: none">
+    <header id="header">
+        <nav>
+            <a href="#">
+                <div class="logo">
+                    <img src="res/logo.png" alt="logo"/>
+                    <div class="text">
+                        <h2>DatabaseDoctors</h2>
+                        <p>you're only one query away from healing</p>
+                    </div>
+                </div>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="patient.html">Search</a></li>
+                <li><a href="appointments_patient.html">Appointments</a></li>
+                <li><a href="settings_patient.html">Profile</a></li>
+                <li id="sign-out"><a href="#">Sign out</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <h1>You are connected</h1>
+</section>
+
+<section id="login">
     <h1>Welcome to Database doctors !</h1>
 
     <!-- Login Form -->
     <div class="form">
-        <h2>Login form</h2>
+        <!--            <h2>Login</h2>-->
         <form id="login-form">
-            <input type="email" id="login-email" placeholder="Email" required />
-            <input type="password" id="login-password" placeholder="Password" required />
+            <input type="email" id="login-email" placeholder="Email" required/>
+            <input type="password" id="login-password" placeholder="Password" required/>
             <button type="submit">Login</button>
             <div id="login-success" style="color: green"></div>
             <div id="login-error" style="color: red"></div>
         </form>
 
         <div class="account">
-            <p>Do you want to register as a doctor ?</p>
-            <a href="signup_doctor.html">Click here</a>
-            <p>Do you want to register as a patient ?</p>
-            <a href="signup_patient.html">Click here</a>
+            <button id="new-patient" type="button">I'm a new patient 🤒</button>
+            <button id="new-doctor" type="button">I'm a new doctor 👩🏼‍⚕️</button>
         </div>
     </div>
+</section>
 
 <a href="readme.html" style="position: absolute; left: 10px; bottom: 10px; font-size: 24px; color: midnightblue">READ ME
     📖</a>
 
 </body>
-
 </html>

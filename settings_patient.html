@@ -10,9 +10,18 @@
 
 
 <body>
-<header>
+<header id="header">
     <nav>
-        <h1 class="logo">Database-doctors</h1>
+        <a href="index.html">
+            <div class="logo">
+                <img src="res/logo.png" alt="logo"/>
+                <div class="text">
+                    <h2>DatabaseDoctors</h2>
+                    <p>you're only one query away from healing</p>
+                </div>
+            </div>
+        </a>
+
         <ul class="nav-links">
             <li><a href="patient.html">Profile</a></li>
             <li><a href="appointments_patient.html">Appointments</a></li>
@@ -24,6 +33,9 @@
 <main>
     <h1>User Settings</h1>
 
+    <div id="settings">
+
+    </div>
     <div class="form">
         <h3>Change Email</h3>
         <form id="email-form">
@@ -35,6 +47,7 @@
 
         <h3>Change Password</h3>
         <form id="password-form">
+            <input type="password" id="old-password" placeholder="Old password">
             <input type="password" id="new-password" placeholder="New Password">
             <button type="submit">Change Password</button>
             <div id="password-success" style="color: green"></div>
@@ -58,7 +71,14 @@
         </form>
 
         <h3>Delete Account</h3>
+        <input type="password" id="current-password" placeholder="Your password">
         <button type="button" id="delete-button">Delete my account</button>
+        <div id="delete-success" style="color: green"></div>
+        <div id="delete-error" style="color: red"></div>
+
+        <div class="account">
+            <button type="button" id="button-back">My Profile</button>
+        </div>
     </div>
 
 

@@ -6,7 +6,6 @@
     <title>Signup</title>
     <link rel="stylesheet" href="style/style.css">
     <script type="module" src="script/signup_patient.js"></script>
-
 </head>
 
 <body>
@@ -17,20 +16,17 @@
     <section class="form">
         <form id="registration-form">
             <input type="email" id="email" placeholder="Email" required>
-
             <input type="password" id="password" placeholder="Password" required>
-
             <input type="text" id="name" placeholder="Name" required>
-
             <input type="number" id="age" placeholder="Age" required>
-
             <button type="submit">Register</button>
             <div id="registration-error" style="color: red;"></div>
             <div id="registration-success" style="color: green;"></div>
         </form>
+
         <div class="account">
-            <p>Are you a doctor ?</p>
-            <a href="signup_doctor.html">Click here</a>
+            <button type="button" id="doctor-account">I am a doctor 👩🏼‍⚕️</button>
+            <button type="button" id="home-button">I already have an account 📝</button>
         </div>
     </section>
 </div>

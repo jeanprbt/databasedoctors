@@ -9,7 +9,7 @@ import {
     setDoc,
     doc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
-import { getErrorMessageForFirebaseErrorCode } from "./utils";
+import { getErrorMessageForFirebaseErrorCode } from "./utils.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -29,6 +29,17 @@ const auth = getAuth(app);
 
 // Initialize Firestore
 const db = getFirestore(app);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Handle sign-up redirection
+document.getElementById("doctor-account").addEventListener("click", function(){
+    window.location.href = "signup_doctor.html";
+})
+
+document.getElementById("home-button").addEventListener("click", function(){
+    window.location.href = "index.html";
+})
 
 // Handle User Registration
 document

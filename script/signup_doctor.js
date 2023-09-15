@@ -48,6 +48,15 @@ addSpecialitiesToSelect(select);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Handle sign-up redirection
+document.getElementById("patient-account").addEventListener("click", function(){
+    window.location.href = "signup_patient.html";
+})
+
+document.getElementById("home-button").addEventListener("click", function(){
+    window.location.href = "index.html";
+})
+
 // Handle User Registration
 document
     .getElementById("registration-form")

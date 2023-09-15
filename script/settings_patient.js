@@ -4,7 +4,9 @@ import {
     updateEmail,
     updateProfile,
     updatePassword,
-    onAuthStateChanged
+    onAuthStateChanged,
+    reauthenticateWithCredential,
+    EmailAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
 import {
     getFirestore,
@@ -68,7 +70,10 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-
+// Handle back button redirection
+document.getElementById("button-back").addEventListener("click", function() {
+    window.location.href = "patient.html";
+})
 
 // Handle email change
 document
@@ -102,28 +107,40 @@ document
             });
     })
 
+// Handle password change
 document
     .getElementById('password-form')
     .addEventListener('submit', async (event) => {
 
-        event.preventDefault()
+        event.preventDefault();
+        const oldPassword = document.getElementById('old-password').value;
         const newPassword = document.getElementById('new-password').value;
+        const credential = EmailAuthProvider.credential(currentUser.email, oldPassword);
 
-        updatePassword(currentUser, newPassword)
-            .then(async () => {
-                console.log(`Password changed successfully.`)
-                // Clear any previous error messages
-                document.getElementById("password-error").textContent = "";
-                //  Display successful login message
-                document.getElementById("password-success").textContent = "Password changed successfully !";
-            })
-            .catch((error) => {
-                console.error("Password change failed : ", error.message);
-                // Clear any previous succeful error message
-                document.getElementById("password-success").textContent = "";
-                // Display error message
-                document.getElementById("password-error").textContent = "Password change failed."
-            })
+        reauthenticateWithCredential(currentUser, credential).then(() => {
+            // User re-authenticated.
+            updatePassword(currentUser, newPassword)
+                .then(async () => {
+                    console.log(`Password changed successfully.`)
+                    // Clear any previous error messages
+                    document.getElementById("password-error").textContent = "";
+                    //  Display successful login message
+                    document.getElementById("password-success").textContent = "Password changed successfully !";
+                })
+                .catch((error) => {
+                    console.error("Password change failed : ", error.message);
+                    // Clear any previous succeful error message
+                    document.getElementById("password-success").textContent = "";
+                    // Display error message
+                    document.getElementById("password-error").textContent = "Password change failed."
+                })
+        }).catch((error) => {
+            console.error("Re-authentication failed : ", error.message);
+            // Clear any previous succeful error message
+            document.getElementById("password-success").textContent = "";
+            // Display error message
+            document.getElementById("password-error").textContent = "The old password you entered is wrong."
+        });
     })
 
 
@@ -191,18 +208,31 @@ document
         event.preventDefault()
         if(confirm("Are you sure you want to delete your account ?")){
 
-            // Delete account in Firestore
-            await deleteDoc(doc(db, "patients", currentUser.uid)).then(() => {
-                console.log("User successfully deleted from Firestore.")
-            }).catch((error) => {
-                console.error("Account deletion from Firestore failed : ", error.message)
-            })
+            const password = document.getElementById('current-password').value;
+            const credential = EmailAuthProvider.credential(currentUser.email, password);
 
-            currentUser.delete()
-                .then(async () => {
-                    console.log("User account successfully deleted.")
+            reauthenticateWithCredential(currentUser, credential).then(async() => {
+
+                // Delete account in Firestore
+                await deleteDoc(doc(db, "patients", currentUser.uid)).then(() => {
+                    console.log("User successfully deleted from Firestore.")
                 }).catch((error) => {
+                    console.error("Account deletion from Firestore failed : ", error.message)
+                })
+
+                currentUser.delete()
+                    .then(async () => {
+                        console.log("User account successfully deleted.")
+                    }).catch((error) => {
                     console.error("Account deletion failed : ", error.message);
-            })
+                })
+
+            }).catch((error) => {
+                console.error("Re-authentication failed : ", error.message);
+                // Clear any previous successful error message
+                document.getElementById("delete-success").textContent = "";
+                // Display error message
+                document.getElementById("delete-error").textContent = "The password you entered is wrong."
+            });
         }
     })

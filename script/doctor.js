@@ -1,12 +1,13 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
 import {
     getAuth,
-    signOut,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
 import {
     getFirestore,
+    getDoc,
     getDocs,
+    doc,
     collection,
     where,
     query,
@@ -33,6 +34,23 @@ const auth = getAuth(app);
 // Initialize Firestore
 const db = getFirestore(app);
 
+// Restrict page to logged-in doctor users
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const docRef = doc(db, "doctors", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            // Add a welcome message
+            const welcomeMessage = document.getElementById('welcome-message');
+            welcomeMessage.textContent = `Welcome ${user.displayName} !`;
+        } else {
+            window.location.href = "patient.html"; // If user is a patient, redirect to doctor page
+        }
+    } else {
+        window.location = 'index.html'; // If user is not logged in, redirect to login page
+    }
+});
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Utils functions 
 
@@ -40,19 +58,6 @@ const db = getFirestore(app);
 signOutButton(document.getElementById('sign-out'), auth);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Restrict page to logged-in users
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // Add a welcome message
-        const welcomeMessage = document.getElementById('welcome-message');
-        welcomeMessage.textContent = `Welcome Dr.${user.displayName} !`;
-
-
-    } else {
-        window.location = 'index.html'; // If user is not logged in, redirect to login page
-    }
-});
 
 //Function to display the calendar
 async function createCalendar(calendarDiv, doc) {

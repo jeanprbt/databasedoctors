@@ -7,6 +7,8 @@ import {
     getFirestore,
     doc,
     getDoc,
+    getDocs,
+    deleteDoc,
     collection,
     where,
     query,
@@ -38,21 +40,20 @@ const auth = getAuth(app);
 // Initialize Firestore
 const db = getFirestore(app);
 
-// Restrict page to logged-in users
+// Restrict page to logged-in patient users
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-         // Check if user is doctor or patient
         const docRef = doc(db, "patients", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
             // Add a welcome message
             const welcomeMessage = document.getElementById('welcome-message');
-            welcomeMessage.textContent = `Welcome ${user.displayName} !`;         
+            welcomeMessage.textContent = `Welcome ${user.displayName} !`;
         } else {
             window.location.href = "doctor.html"; // If user is a doctor, redirect to doctor page
         }
     } else {
-        window.location = 'index.html'; // If user is not logged in, redirect to login page
+        window.location.href = 'index.html'; // If user is not logged in, redirect to login page
     }
 });
 
@@ -108,7 +109,7 @@ async function displaySearchResults(querySnapshot) {
     const resultTitle = document.createElement('h2');
 
     if (querySnapshot.empty) {
-        resultTitle.textContent = 'No doctor found for you requirements...';
+        resultTitle.textContent = 'No doctor found for your requirements...';
         resultDiv.appendChild(resultTitle);
         return;
     } else {
@@ -199,7 +200,7 @@ async function createCalendar(calendarDiv, doc) {
     });
 
 
-    //show availabilitites for the 50 next days
+    //show availabilities for the 50 next days
     for (let i = 0; i <= 50; i++) {
         const currentDay = new Date();
         currentDay.setDate(currentDay.getDate() + i);
@@ -317,7 +318,7 @@ async function createCalendar(calendarDiv, doc) {
                     console.error('Error adding slot to usedSlots:', error);
                 });
             
-        },
+        }
     });
 
     await calendar.render();
