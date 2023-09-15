@@ -5,7 +5,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
 import {
     getFirestore,
-    getDocs,
+    doc,
+    getDoc,
     collection,
     where,
     query,
@@ -33,12 +34,18 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // Restrict page to logged-in users
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
-        // Add a welcome message
-        const welcomeMessage = document.getElementById('welcome-message');
-        welcomeMessage.textContent = `Welcome ${user.displayName} !`;
-
+         // Check if user is doctor or patient
+        const docRef = doc(db, "patients", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            // Add a welcome message
+            const welcomeMessage = document.getElementById('welcome-message');
+            welcomeMessage.textContent = `Welcome ${user.displayName} !`;         
+        } else {
+            window.location.href = "doctor.html"; // If user is a doctor, redirect to doctor page
+        }
     } else {
         window.location = 'index.html'; // If user is not logged in, redirect to login page
     }

@@ -82,3 +82,20 @@ export function signOutButton(element, auth) {
         });
     });
 }
+export function getErrorMessageForFirebaseErrorCode(errorCode) {
+    switch (errorCode) {
+        case "auth/email-already-in-use":
+            return "The email address is already in use by another account.";
+        case "auth/invalid-email":
+            return "Invalid email address. Please check the email format.";
+        case "auth/weak-password":
+            return "The password is too weak. Please use a stronger password.";
+        case "auth/user-not-found":
+            return "User not found. Please check your email or register.";
+        case "auth/wrong-password":
+            return "Incorrect password. Please try again.";
+        // Add more cases for other error codes as needed
+        default:
+            return "An error occurred. Please try again later.";
+    }
+}
