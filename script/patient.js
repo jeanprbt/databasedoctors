@@ -218,7 +218,7 @@ async function createCalendar(calendarDiv, doc) {
                 var booked_by_self = false;
                 usedSlots.forEach((usedSlot => {
                     const usedSlotDate = new Date(usedSlot.slotStartTime);
-                    if(usedSlotDate.getTime() === startDate.getTime()){
+                    if (usedSlotDate.getTime() === startDate.getTime()) {
                         available = false;
                         if(usedSlot.patientId === auth.currentUser.uid){
                             booked_by_self = true;
@@ -236,8 +236,8 @@ async function createCalendar(calendarDiv, doc) {
                     };
                     events.push(event);
 
-                //if the slot is already booked by patient
-                } else if (booked_by_self){
+                    //if the slot is already booked by patient
+                } else if (booked_by_self) {
                     const event = {
                         title: 'BOOKED',
                         start: startDate.toISOString(),
@@ -245,9 +245,9 @@ async function createCalendar(calendarDiv, doc) {
                         dow: [currentDay.getDay()],
                         backgroundColor: 'green', // Set the background color to green
                     };
-                
+
                     events.push(event);
-                    
+
                 }
             });
         }
@@ -266,10 +266,10 @@ async function createCalendar(calendarDiv, doc) {
         slotMinTime: '08:00:00',
         slotMaxTime: '17:00:00',
         hiddenDays: [0, 6], // Hide Sunday (0) and Saturday (6)
+        dayMinWidth: '800px',
         headerToolbar: {
+            right: 'title',   // Customize the center section of the toolbar
             left: 'prev,next', // Customize the left section of the toolbar
-            center: 'title',   // Customize the center section of the toolbar
-            right: ',timeGridWeek,timeGridDay', // Customize the right section of the toolbar
         },
         eventContent: function (arg) {
             if (arg.event.backgroundColor === 'green') {
@@ -285,7 +285,7 @@ async function createCalendar(calendarDiv, doc) {
             const slotStartTime = event.start.toISOString();
             const doctorId = doc.id;
             const eventDate = formatTime(event.start);
-            
+
             if (event.backgroundColor === 'green') {
 
                 // Delete the event from the used slots
@@ -322,7 +322,7 @@ async function createCalendar(calendarDiv, doc) {
                 .catch((error) => {
                     console.error('Error adding slot to usedSlots:', error);
                 });
-            
+
         }
     });
 

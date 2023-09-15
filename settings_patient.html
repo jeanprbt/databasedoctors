@@ -34,53 +34,52 @@
     <h1>User Settings</h1>
 
     <div id="settings">
+        <div class="form">
+            <h3>Change Email</h3>
+            <form id="email-form">
+                <input type="email" id="new-email" placeholder="New Email">
+                <button type="submit">Change Email</button>
+                <div id="email-success" style="color: green"></div>
+                <div id="email-error" style="color: red"></div>
+            </form>
 
-    </div>
-    <div class="form">
-        <h3>Change Email</h3>
-        <form id="email-form">
-            <input type="email" id="new-email" placeholder="New Email">
-            <button type="submit">Change Email</button>
-            <div id="email-success" style="color: green"></div>
-            <div id="email-error" style="color: red"></div>
-        </form>
+            <h3>Change Password</h3>
+            <form id="password-form">
+                <input type="password" id="old-password" placeholder="Old password">
+                <input type="password" id="new-password" placeholder="New Password">
+                <button type="submit">Change Password</button>
+                <div id="password-success" style="color: green"></div>
+                <div id="password-error" style="color: red"></div>
+            </form>
 
-        <h3>Change Password</h3>
-        <form id="password-form">
-            <input type="password" id="old-password" placeholder="Old password">
-            <input type="password" id="new-password" placeholder="New Password">
-            <button type="submit">Change Password</button>
-            <div id="password-success" style="color: green"></div>
-            <div id="password-error" style="color: red"></div>
-        </form>
+            <h3>Update Age</h3>
+            <form id="age-form">
+                <input type="number" id="new-age" placeholder="New Age">
+                <button type="submit">Update Age</button>
+                <div id="age-success" style="color: green"></div>
+                <div id="age-error" style="color: red"></div>
+            </form>
 
-        <h3>Update Age</h3>
-        <form id="age-form">
-            <input type="number" id="new-age" placeholder="New Age">
-            <button type="submit">Update Age</button>
-            <div id="age-success" style="color: green"></div>
-            <div id="age-error" style="color: red"></div>
-        </form>
+            <h3>Update Name</h3>
+            <form id="name-form">
+                <input type="text" id="new-name" placeholder="New Name">
+                <button type="submit">Update Profile</button>
+                <div id="name-success" style="color: green"></div>
+                <div id="name-error" style="color: red"></div>
+            </form>
 
-        <h3>Update Name</h3>
-        <form id="name-form">
-            <input type="text" id="new-name" placeholder="New Name">
-            <button type="submit">Update Profile</button>
-            <div id="name-success" style="color: green"></div>
-            <div id="name-error" style="color: red"></div>
-        </form>
+            <h3>Delete Account</h3>
+            <input type="password" id="current-password" placeholder="Your password">
+            <button type="button" id="delete-button">Delete my account</button>
+            <div id="delete-success" style="color: green"></div>
+            <div id="delete-error" style="color: red"></div>
 
-        <h3>Delete Account</h3>
-        <input type="password" id="current-password" placeholder="Your password">
-        <button type="button" id="delete-button">Delete my account</button>
-        <div id="delete-success" style="color: green"></div>
-        <div id="delete-error" style="color: red"></div>
-
-        <div class="account">
-            <button type="button" id="button-back">My Profile</button>
+            <div class="account">
+                <button type="button" id="button-back">My Profile</button>
+            </div>
         </div>
-    </div>
 
+    </div>
 
 
 </main>

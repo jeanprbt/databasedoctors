@@ -27,21 +27,33 @@ onAuthStateChanged(auth, async (user) => {
         const docRef = doc(db, "patients", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-            // Add a welcome message
-            const welcomeMessage = document.getElementById('welcome-message');
-            welcomeMessage.textContent = `Welcome ${user.displayName} !`;
+            // If user is a patient, do nothing
         } else {
             window.location.href = "doctor.html"; // If user is a doctor, redirect to doctor page
         }
     } else {
         window.location.href = 'index.html'; // If user is not logged in, redirect to login page
     }
+    try{
+        await search();
+    } catch (error){
+        console.error("Error while searching for appointments:", error);
+    }
 });
 
 //THIS PART TAKES CARE OF GETTING THE PATIENTS APPOINTMENT
 
-// Get the appointments  database
-const appointments = collection(db, 'usedSlots');
+async function search() {
+    // Get the appointments  database
+    const appointments = collection(db, 'usedSlots');
+
+    // Query the Firestore database
+    let answer = query(appointments, where('patientId', '==', currentUser.uid));
+    const querySnapshot = await getDocs(answer);
+
+    // Display the appointments
+    await displayAppointments(querySnapshot);
+}
 
 // Query the Firebase database based on user input
 let answer = query(appointments, where('patientId', '==', auth.currentUser.uid));

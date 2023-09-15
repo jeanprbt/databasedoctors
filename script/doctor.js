@@ -111,7 +111,6 @@ async function createCalendar(calendarDiv,doc) {
                     const usedSlotDate = new Date(usedSlot.slotStartTime);
                     if (usedSlotDate.getTime() === startDate.getTime()){
                         available = false;
-                        console.log(usedSlot.patientId,usedSlot.doctorId);
 
                         if (usedSlot.patientId === usedSlot.doctorId){
                             doctor_app = true;
@@ -119,8 +118,6 @@ async function createCalendar(calendarDiv,doc) {
                     }
 
                 });
-                console.log('Available:', available, 'Docteur App:', doctor_app);
-
                 // Check if the slot is not in the usedSlots array (i.e., it's available)
                 if (available){
                     const event = {
@@ -185,7 +182,7 @@ async function createCalendar(calendarDiv,doc) {
             }
             else
             {
-                return 'Available Slot';
+                return 'Set unavailable';
             }
         },
 
@@ -231,8 +228,6 @@ async function createCalendar(calendarDiv,doc) {
                 addDoc(usedSlotsCollection, newUsedSlot)
                     .then(() => {
                         // Slot added successfully
-                        console.log('Slot added to usedSlots:', slotStartTime);
-                        //make the cell red
                         event.setProp('backgroundColor', 'red');
                         calendar.render();
                     })
@@ -245,8 +240,6 @@ async function createCalendar(calendarDiv,doc) {
                 addDoc(usedSlotsCollection, newUsedSlot)
                     .then(() => {
                         // Slot added successfully
-                        console.log('Slot added to usedSlots:', slotStartTime);
-                        //make the cell grey
                         event.setProp('backgroundColor', 'grey');
                         calendar.render();
                     })

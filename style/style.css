@@ -85,6 +85,7 @@ a .logo {
 a {
     text-decoration: none;
     color: dodgerblue;
+    cursor: pointer;
 }
 
 .nav-links li {
@@ -173,6 +174,10 @@ button:hover {
     max-width: 500px;
 }
 
+#settings .form {
+    max-width: 500px;
+}
+
 /* Center the Today button and custom buttons below the header */
 .fc-header-toolbar .fc-center-button {
     display: flex;
@@ -206,6 +211,7 @@ label {
     height: 364px; /* Set the desired height in pixels */
     width: 80%; /* Set the desired width as needed */
     margin: 0 auto; /* Center the calendar horizontally */
+    user-select: none; /* Prevent text selection */
 }
 
 #doccal{
@@ -214,12 +220,12 @@ label {
 
 .doctor-card{
     float: left; /* Float left to place it on the left side */
-    width: 50%; /* Adjust the width as needed */
+    width: 25%; /* Adjust the width as needed */
 }
 
 .doctor-calendar{
     float: right; /* Float left to place it on the right side */
-    width: 50%; /* Adjust the width as needed */
+    width: 75%; /* Adjust the width as needed */
 }
 
 .doctor-container {
