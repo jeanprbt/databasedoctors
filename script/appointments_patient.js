@@ -76,35 +76,39 @@ async function displayAppointments(querySnapshot) {
     const appointmentTitle = document.createElement('h2');
 
     if (querySnapshot.empty) {
-        appointmentTitle.textContent = 'No appointments';
-        appointmentsDiv.appendChild(resultTitle);
+        appointmentTitle.textContent = 'You have no appointments';
+        appointmentsDiv.appendChild(appointmentTitle);
         return;
     } else {
-        appointmentTitleTitle.textContent = 'My appointments';
-        appointmentTitleDiv.appendChild(resultTitle);
+        appointmentTitle.textContent = 'My appointments';
+        appointmentsDiv.appendChild(appointmentTitle);
     }
 
-    //iterate over each
-    querySnapshot.forEach((doc) => {
+    // Iterate over each result
+    querySnapshot.forEach(async (docu) => {
 
-        const doctorData = doc.data();
+        const appointment = docu.data();
+        const docId = appointment.doctorId;
+        const date = appointment.slotStartTime;
 
-        // Create a container for each doctor Card + calendar
-        const doctorContainer = document.createElement('div');
-        doctorContainer.classList.add('doctor-container');
+        // Query the Firestore database
+        const doctor = doc(db, "doctors", docId);
+        const querySnapshotDoc = await getDoc(doctor);
 
-        // Create elements to display doctor information (e.g., name, speciality, etc.)
+        const doctorData = querySnapshotDoc.data();
+
+        // Create a container for each appointment
+        const appointmentContainer = document.createElement('div');
+        appointmentContainer.classList.add('appointment-container');
+
+        // Create elements to display doctor information and date (e.g., name, speciality, etc.)
         const doctorCard = document.createElement('div');
         doctorCard.classList.add('doctor-card');
 
-        //Create elements for calendar + button
-        const doctorCalendar = document.createElement('div');
-        doctorCalendar.classList.add('doctor-calendar');
-
         // Add doctor information to the card
 
-        const doctorName = document.createElement('h3');
-        doctorName.textContent = doctorData.name;
+        const appTitle = document.createElement('h3');
+        appTitle.textContent = `Appointment with ${doctorData.name},  ${date}`;
 
         const doctorSpeciality = document.createElement('p');
         doctorSpeciality.textContent = `Speciality: ${doctorData.speciality}`;
@@ -115,25 +119,17 @@ async function displayAppointments(querySnapshot) {
         const doctorEmail = document.createElement('p');
         doctorEmail.textContent = `Contact : ${doctorData.email}`;
 
-        // Create a div for the calendar
-        const calendarDiv = document.createElement('div');
-        calendarDiv.classList.add('calendar');
 
-        // Append the elements to the card
-        doctorCard.appendChild(doctorName);
+        doctorCard.appendChild(appTitle);
         doctorCard.appendChild(doctorSpeciality);
         doctorCard.appendChild(doctorCity);
         doctorCard.appendChild(doctorEmail);
 
-        //Append element to the calendar division
-        doctorCalendar.appendChild(calendarDiv);
-        createCalendar(calendarDiv, doc);
-
         //Put both parts together
-        doctorContainer.appendChild(doctorCard);
-        doctorContainer.appendChild(doctorCalendar);
+        appointmentContainer.appendChild(doctorCard);
 
         // Append the full doctor info to the appointmentsDiv
-        resultDiv.appendChild(doctorContainer);
+        appointmentsDiv.appendChild(doctorCard);
+
     });
 }
