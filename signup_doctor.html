@@ -3,39 +3,36 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Database doctors</title>
-    <link rel="stylesheet" href="style/form-style.css" />
+    <title>Signup</title>
+    <link rel="stylesheet" href="style/style.css" />
     <script type="module" src="script/signup_doctor.js"></script>
 </head>
 
 <body>
 
+<div id="login">
     <h1>Doctor Registration</h1>
 
-    <div class="form">
-        <h2>Registration form</h2>
+    <section class="form">
+
         <form id="registration-form">
             <input type="email" id="email" placeholder="Email" required />
-
             <input type="password" id="password" placeholder="Password" required />
-
             <input type="text" id="name" placeholder="Name" required />
-
             <input type="number" id="age" placeholder="Age" required />
-
             <select id="speciality" name="speciality" placeholder="Speciality"></select>
-
             <select id="city" name="city" placeholder="Select a Swedish city"></select>
-
             <button type="submit">Register</button>
             <div id="registration-error" style="color: red"></div>
             <div id="registration-success" style="color: green"></div>
         </form>
+
         <div class="account">
             <p>Are you a patient ?</p>
             <a href="signup_patient.html">Click here</a>
         </div>
-    </div>
+    </section>
+</div>
 
 </body>
 

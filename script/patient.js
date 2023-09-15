@@ -12,7 +12,12 @@ import {
     query,
     addDoc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
-import {addCitiesAndAllCitiesToSelect, addSpecialitiesAndAllSpecialitiesToSelect, signOutButton} from "./utils.js";
+import {
+    addCitiesAndAllCitiesToSelect,
+    addSpecialitiesAndAllSpecialitiesToSelect,
+    signOutButton,
+    formatTime
+} from "./utils.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -62,8 +67,8 @@ const selectCity = document.getElementById("city");
 addCitiesAndAllCitiesToSelect(selectCity);
 
 // Add the options to the select element
-const selectSpeciacilities = document.getElementById("speciality");
-addSpecialitiesAndAllSpecialitiesToSelect(selectSpeciacilities);
+const selectSpecialities = document.getElementById("speciality");
+addSpecialitiesAndAllSpecialitiesToSelect(selectSpecialities);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -99,6 +104,7 @@ searchForm.addEventListener('submit', async (e) => {
 async function displaySearchResults(querySnapshot) {
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = ''; // Clear previous results
+    resultDiv.style.visibility = 'visible';
     const resultTitle = document.createElement('h2');
 
     if (querySnapshot.empty) {
@@ -271,9 +277,21 @@ async function createCalendar(calendarDiv, doc) {
             const doctorId = doc.id;
             const eventDate = formatTime(event.start);
             
-            if (event.backgroundColor === 'grey') {
-                console.log(`Event is already booked: ${eventDate}`);
-                return; // Exit the function if the slot is already booked
+            if (event.backgroundColor === 'green') {
+
+                // Delete the event from the used slots
+                const usedSlotsCollection = collection(db, 'usedSlots');
+                const usedSlotsQuery = query(usedSlotsCollection, where('doctorId', '==', doctorId),
+                    where('slotStartTime', '==', slotStartTime));
+                const usedSlotsSnapshot = getDocs(usedSlotsQuery);
+                usedSlotsSnapshot.then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        deleteDoc(doc.ref);
+                    });
+                });
+                event.setProp('backgroundColor', 'dodgerblue');
+                calendar.render();
+                return; // E
             }
             console.log(`Event booked: ${eventDate}`)
             //consider the event as an appointment between the patient and doctor and add it
@@ -306,14 +324,6 @@ async function createCalendar(calendarDiv, doc) {
     return calendar;
 }
 
-
-// Function to format date and time to be readable
-function formatTime(date) {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based, so we add 1
-    const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
 
     return `${day}-${month}-${year} ${hours}:${minutes}`;
 }

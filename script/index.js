@@ -8,7 +8,7 @@
      getDoc,
      doc
  } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
- import { getErrorMessageForFirebaseErrorCode } from "./utils";
+ import { getErrorMessageForFirebaseErrorCode, signOutButton } from "./utils.js";
 
  // Your web app's Firebase configuration
  const firebaseConfig = {

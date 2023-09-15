@@ -98,21 +98,30 @@ async function createCalendar(calendarDiv, doc) {
                 endDate.setHours(slot.end.split(':')[0], slot.end.split(':')[1], 0, 0);
 
                 // Check if the slot is not in the usedSlots array (i.e., it's available)
-                if (!usedSlots.some(usedSlot => {
-                    // Compare both date and time
-                    const usedSlotDate = new Date(usedSlot);
-                    return usedSlotDate.getTime() === startDate.getTime();
-                })) {
+                if (available){
                     const event = {
                         title: 'Available',
                         start: startDate.toISOString(),
                         end: endDate.toISOString(),
                         dow: [currentDay.getDay()],
+                        backgroundColor: 'dodgerblue',
                     };
-
                     events.push(event);
-                } else {
-                    // This slot is already used
+                }
+
+
+                else if (doctor_app){
+                    const event = {
+
+                        title: 'Not Available',
+                        start: startDate.toISOString(),
+                        end: endDate.toISOString(),
+                        dow: [currentDay.getDay()],
+                        backgroundColor: 'red', // Set the background color to grey
+                    };
+                    events.push(event);
+
+                }else{
                     const event = {
                         title: 'Used Slot',
                         start: startDate.toISOString(),
@@ -120,9 +129,7 @@ async function createCalendar(calendarDiv, doc) {
                         dow: [currentDay.getDay()],
                         backgroundColor: 'grey', // Set the background color to grey
                     };
-                
                     events.push(event);
-                    
                 }
             });
         }
@@ -144,7 +151,11 @@ async function createCalendar(calendarDiv, doc) {
         eventContent: function (arg) {
             if (arg.event.backgroundColor === 'grey') {
                 return 'Booked';
-            } else {
+            } else if(arg.event.backgroundColor === 'red'){
+                return 'Not Available';
+            }
+            else
+            {
                 return 'Available Slot';
             }
         },

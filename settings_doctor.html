@@ -25,60 +25,34 @@
     <main>
         <h1>User Settings</h1>
 
-        <div class="form">
-            <h3>Change Email</h3>
-            <form id="email-form">
-                <input type="email" id="new-email" placeholder="New Email">
-                <button type="submit">Change Email</button>
-                <div id="email-success" style="color: green"></div>
-                <div id="email-error" style="color: red"></div>
-            </form>
+                <h3>Update Speciality</h3>
+                <form id="speciality-form">
+                    <select id="speciality" name="speciality" placeholder="Speciality"></select>
+                    <button type="submit">Update Speciality</button>
+                    <div id="speciality-success" style="color: green"></div>
+                    <div id="speciality-error" style="color: red"></div>
+                </form>
 
-            <h3>Change Password</h3>
-            <form id="password-form">
-                <input type="password" id="new-password" placeholder="New Password">
-                <button type="submit">Change Password</button>
-                <div id="password-success" style="color: green"></div>
-                <div id="password-error" style="color: red"></div>
-            </form>
+                <h3>Update City</h3>
+                <form id="city-form">
+                    <select id="city" name="city" placeholder="Select a Swedish city"></select>
+                    <button type="submit">Update City</button>
+                    <div id="city-success" style="color: green"></div>
+                    <div id="city-error" style="color: red"></div>
+                </form>
 
-            <h3>Update Age</h3>
-            <form id="age-form">
-                <input type="number" id="new-age" placeholder="New Age">
-                <button type="submit">Update Age</button>
-                <div id="age-success" style="color: green"></div>
-                <div id="age-error" style="color: red"></div>
-            </form>
+                <h3>Delete Account</h3>
+                <input type="password" id="current-password" placeholder="Your password">
+                <button type="button" id="delete-button">Delete my account</button>
+                <div id="delete-success" style="color: green"></div>
+                <div id="delete-error" style="color: red"></div>
 
-            <h3>Update Name</h3>
-            <form id="name-form">
-                <input type="text" id="new-name" placeholder="New Name">
-                <button type="submit">Update Profile</button>
-                <div id="name-success" style="color: green"></div>
-                <div id="name-error" style="color: red"></div>
-            </form>
+                <div class="account">
+                    <button type="button" id="button-back">My Profile</button>
+                </div>
 
-            <h3>Update Speciality</h3>
-            <form id="speciality-form">
-                <select id="speciality" name="speciality" placeholder="Speciality"></select>
-                <button type="submit">Update Speciality</button>
-                <div id="speciality-success" style="color: green"></div>
-                <div id="speciality-error" style="color: red"></div>
-            </form>
-
-            <h3>Update City</h3>
-            <form id="city-form">
-                <select id="city" name="city" placeholder="Select a Swedish city"></select>
-                <button type="submit">Update City</button>
-                <div id="city-success" style="color: green"></div>
-                <div id="city-error" style="color: red"></div>
-            </form>
-
-            <h3>Delete Account</h3>
-            <button type="button" id="delete-button">Delete my account</button>
+            </div>
         </div>
-
-
 
     </main>
 </body>
