@@ -4,7 +4,15 @@ import {
     onAuthStateChanged
 
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
+import {
+    getFirestore,
+    doc,
+    getDocs,
+    getDoc,
+    where,
+    collection,
+    query,
+} from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
 
 // Web app's Firebase configuration
 const firebaseConfig = {
@@ -21,9 +29,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+let currentUser;
+
 // Restrict page to logged-in patient users
 onAuthStateChanged(auth, async (user) => {
     if (user) {
+        currentUser = user ;
         const docRef = doc(db, "patients", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -41,6 +52,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //THIS PART TAKES CARE OF GETTING THE PATIENTS APPOINTMENT
 
 async function search() {
@@ -55,14 +67,8 @@ async function search() {
     await displayAppointments(querySnapshot);
 }
 
-// Query the Firebase database based on user input
-let answer = query(appointments, where('patientId', '==', auth.currentUser.uid));
-const querySnapshot = await getDocs(answer);
 
-// Display the appointments
-await displayAppointments(querySnapshot);
-
-//Function to display the doctors found
+// Function to display the appointments found
 async function displayAppointments(querySnapshot) {
     const appointmentsDiv = document.getElementById('appointments');
     appointmentsDiv.innerHTML = ''; // Clear previous results

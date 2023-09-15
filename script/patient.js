@@ -36,9 +36,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+let currentUser;
+
 // Restrict page to logged-in patient users
 onAuthStateChanged(auth, async (user) => {
     if (user) {
+        currentUser = user;
         const docRef = doc(db, "patients", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -108,11 +111,11 @@ async function displaySearchResults(querySnapshot) {
         resultDiv.appendChild(resultTitle);
         return;
     } else {
-        resultTitle.textContent = 'Results : ';
+        resultTitle.textContent = 'Results';
         resultDiv.appendChild(resultTitle);
     }
 
-    //iterate over each
+    // Iterate over each result
     querySnapshot.forEach((doc) => {
 
         const doctorData = doc.data();
@@ -200,7 +203,6 @@ async function createCalendar(calendarDiv, doc) {
         usedSlots.push(slotTuple);
     });
 
-
     //show availabilities for the 50 next days
     for (let i = 0; i <= 50; i++) {
         const currentDay = new Date();
@@ -220,7 +222,7 @@ async function createCalendar(calendarDiv, doc) {
                     const usedSlotDate = new Date(usedSlot.slotStartTime);
                     if (usedSlotDate.getTime() === startDate.getTime()) {
                         available = false;
-                        if(usedSlot.patientId === auth.currentUser.uid){
+                        if (usedSlot.patientId === currentUser.uid) {
                             booked_by_self = true;
                         }
                     }
@@ -279,7 +281,7 @@ async function createCalendar(calendarDiv, doc) {
             }
         },
 
-        //this function is called when you click on an available slot
+        // This function is called when you click on an available slot
         eventClick: function (info) {
             const event = info.event; // The event object
             const slotStartTime = event.start.toISOString();
@@ -303,21 +305,20 @@ async function createCalendar(calendarDiv, doc) {
                 return; // E
             }
 
-            //consider the event as an appointment between the patient and doctor and add it
-            //to used slots
+            // Consider the event as an appointment between the patient and doctor and add it
+            // To usedSlots
             const usedSlotsCollection = collection(db, 'usedSlots');
             const newUsedSlot = {
                 doctorId: doctorId,
                 slotStartTime: slotStartTime,
-                patientId: auth.currentUser.uid,
+                patientId: currentUser.uid,
             };
 
             addDoc(usedSlotsCollection, newUsedSlot)
                 .then(() => {
                     // Slot added successfully
-                    //make the cell green
+                    // Make the cell green
                     event.setProp('backgroundColor', 'green');
-                    //calendar.render();
                 })
                 .catch((error) => {
                     console.error('Error adding slot to usedSlots:', error);
