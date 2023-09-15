@@ -11,7 +11,8 @@ import {
     collection,
     where,
     query,
-    addDoc
+    addDoc,
+    deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
 import {signOutButton} from "./utils.js";
 
@@ -60,7 +61,7 @@ signOutButton(document.getElementById('sign-out'), auth);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Function to display the calendar
-async function createCalendar(calendarDiv, doc) {
+async function createCalendar(calendarDiv,doc) {
 
     // Create an array to store the events for the doctor's calendar
     const events = [];
@@ -78,14 +79,18 @@ async function createCalendar(calendarDiv, doc) {
     ];
 
     // Fetch the used slots from the database
-    const usedSlotsQuery = query(collection(db, 'usedSlots'), where('doctorId', '==', doc.id));
+    const usedSlotsQuery = query(collection(db, 'usedSlots'), where('doctorId', '==',doc.id));
     const usedSlotsSnapshot = await getDocs(usedSlotsQuery);
     const usedSlots = [];
 
     //upload the used slots for the doctor
     usedSlotsSnapshot.forEach((slotDoc) => {
         const slotData = slotDoc.data();
-        usedSlots.push(slotData.slotStartTime);
+        usedSlots.push({
+            slotStartTime: slotData.slotStartTime,
+            doctorId: slotData.doctorId,
+            patientId: slotData.patientId,
+        });
     });
 
 
@@ -153,6 +158,11 @@ async function createCalendar(calendarDiv, doc) {
         slotMinTime: '08:00:00',
         slotMaxTime: '17:00:00',
         hiddenDays: [0, 6], // Hide Sunday (0) and Saturday (6)
+        headerToolbar: {
+            left: 'prev,next', // Customize the left section of the toolbar
+            center: 'title',   // Customize the center section of the toolbar
+            right: 'timeGridWeek,timeGridDay', // Customize the right section of the toolbar
+        },
         eventContent: function (arg) {
             if (arg.event.backgroundColor === 'grey') {
                 return 'Booked';
@@ -164,12 +174,6 @@ async function createCalendar(calendarDiv, doc) {
                 return 'Available Slot';
             }
         },
-        eventRender: function (info) {
-        if (info.event.backgroundColor === 'grey') {
-            // Disable click for used slots
-            info.el.classList.add('fc-non-clickable');
-        }
-    },
 
         //this function is called when you click on an available slot
         eventClick: function (info) {
@@ -177,11 +181,28 @@ async function createCalendar(calendarDiv, doc) {
             const slotStartTime = event.start.toISOString();
             const doctorId = doc.id;
             const eventDate = formatTime(event.start);
-            
+
             if (event.backgroundColor === 'grey') {
                 console.log(`Event is already booked: ${eventDate}`);
                 return; // Exit the function if the slot is already booked
             }
+            else if(event.backgroundColor === 'red'){
+                //delete the event from the used slots
+                const usedSlotsCollection = collection(db, 'usedSlots');
+                const usedSlotsQuery = query(usedSlotsCollection, where('doctorId', '==', doctorId),
+                    where('slotStartTime', '==', slotStartTime));
+                const usedSlotsSnapshot = getDocs(usedSlotsQuery);
+                usedSlotsSnapshot.then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        deleteDoc(doc.ref);
+                    });
+                });
+                event.setProp('backgroundColor', 'dodgerblue');
+                calendar.render();
+                console.log(`Event freed: ${eventDate}`);
+                return;
+            }
+
             console.log(`Event booked: ${eventDate}`)
             //consider the event as an appointment between the patient and doctor and add it
             //to used slots
@@ -192,20 +213,34 @@ async function createCalendar(calendarDiv, doc) {
                 patientId: auth.currentUser.uid,
             };
 
-            addDoc(usedSlotsCollection, newUsedSlot)
-                .then(() => {
-                    // Slot added successfully
-                    console.log('Slot added to usedSlots:', slotStartTime);
-                    //make the cell grey
-                    event.setProp('backgroundColor', 'grey');
-                    
-                
-                    calendar.render();
-                })
-                .catch((error) => {
-                    console.error('Error adding slot to usedSlots:', error);
-                });
-            
+
+            if(newUsedSlot.doctorId===newUsedSlot.patientId){
+                addDoc(usedSlotsCollection, newUsedSlot)
+                    .then(() => {
+                        // Slot added successfully
+                        console.log('Slot added to usedSlots:', slotStartTime);
+                        //make the cell red
+                        event.setProp('backgroundColor', 'red');
+                        calendar.render();
+                    })
+                    .catch((error) => {
+                        console.error('Error adding slot to usedSlots:', error);
+                    });
+
+            }
+            else{
+                addDoc(usedSlotsCollection, newUsedSlot)
+                    .then(() => {
+                        // Slot added successfully
+                        console.log('Slot added to usedSlots:', slotStartTime);
+                        //make the cell grey
+                        event.setProp('backgroundColor', 'grey');
+                        calendar.render();
+                    })
+                    .catch((error) => {
+                        console.error('Error adding slot to usedSlots:', error);
+                    });
+            }
         },
     });
 
@@ -228,12 +263,11 @@ function formatTime(date) {
 document.addEventListener("DOMContentLoaded", function () {
     auth.onAuthStateChanged(function (user) {
         if (user) {
-            // User is signed in, and you can access user.uid
             const doctorInfo = {
                 id: user.uid
             };
-            const calendarDiv = document.getElementById("calendar");
-            createCalendar(calendarDiv, doctorInfo);
+            const calendarDiv = document.getElementById("doccal");
+            createCalendar(calendarDiv,doctorInfo);
         } else {
             // No user is authenticated, handle it here
             console.error("No authenticated user found.");

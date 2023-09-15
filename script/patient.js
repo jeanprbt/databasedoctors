@@ -257,6 +257,11 @@ async function createCalendar(calendarDiv, doc) {
         slotMinTime: '08:00:00',
         slotMaxTime: '17:00:00',
         hiddenDays: [0, 6], // Hide Sunday (0) and Saturday (6)
+        headerToolbar: {
+            left: 'prev,next', // Customize the left section of the toolbar
+            center: 'title',   // Customize the center section of the toolbar
+            right: ',timeGridWeek,timeGridDay', // Customize the right section of the toolbar
+        },
         eventContent: function (arg) {
             if (arg.event.backgroundColor === 'grey') {
                 return 'Booked';
@@ -326,5 +331,3 @@ async function createCalendar(calendarDiv, doc) {
 }
 
 
-    return `${day}-${month}-${year} ${hours}:${minutes}`;
-}

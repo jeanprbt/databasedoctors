@@ -140,7 +140,15 @@ button {
     display: inline-block;
     padding: 10px 20px;
 }
+.fc.fc-button{
 
+    user-select: none;
+    background-color: transparent;
+    border: 2px solid transparent;
+    padding: 15%;
+    line-height: 1;
+    border-radius: 10%;
+}
 button:hover {
     background-color: #444;
 }
@@ -200,6 +208,9 @@ label {
     margin: 0 auto; /* Center the calendar horizontally */
 }
 
+#doccal{
+    height: 425px;
+}
 
 .doctor-card{
     float: left; /* Float left to place it on the left side */
