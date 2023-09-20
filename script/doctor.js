@@ -173,7 +173,7 @@ async function createCalendar(calendarDiv,doc) {
             if (arg.event.backgroundColor === 'grey') {
                 return 'Booked';
             } else if(arg.event.backgroundColor === 'red'){
-                return 'Not Available';
+                return 'Set available';
             }
             else
             {
