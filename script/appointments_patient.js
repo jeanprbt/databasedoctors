@@ -129,7 +129,7 @@ async function displayAppointments(querySnapshot) {
         appointmentContainer.appendChild(doctorCard);
 
         // Append the full doctor info to the appointmentsDiv
-        appointmentsDiv.appendChild(doctorCard);
+        appointmentsDiv.appendChild(appointmentContainer);
 
     });
 }

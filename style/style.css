@@ -258,3 +258,14 @@ label {
     background-color: #197de1;
 }
 
+.appointment-container {
+    background-color: rgba(236, 236, 236, 0.8);
+    border-radius: 10px;
+    display: flex; /* Use flexbox to control layout */
+    justify-content: space-between; /* Separate doctorCard and doctorCalendar */
+    margin-bottom: 20px; /* Add margin for spacing between doctors */
+    border: 1px solid #ccc; /* Add a border for visual separation */
+    padding: 10px; /* Add padding for spacing within the container */
+}
+
+
