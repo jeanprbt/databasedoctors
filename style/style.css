@@ -12,8 +12,6 @@ body {
     min-height: 100vh;
 }
 
-
-
 #login {
     position: absolute;
     width: 100%;
@@ -271,6 +269,16 @@ label {
     margin-bottom: 20px; /* Add margin for spacing between doctors */
     border: 1px solid #ccc; /* Add a border for visual separation */
     padding: 10px; /* Add padding for spacing within the container */
+}
+
+.appointments {
+    background-color: rgba(236, 236, 236, 0.8);
+    border-radius: 10px;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 80%;
 }
 
 
