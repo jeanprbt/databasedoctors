@@ -9,7 +9,7 @@
      getDoc,
      doc
  } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
- import { getErrorMessageForFirebaseErrorCode, signOutButton } from "./utils.js";
+ import {getErrorMessageForFirebaseErrorCode, isDoctor, isPatient, signOutButton} from "./utils.js";
 
  // Your web app's Firebase configuration
  const firebaseConfig = {
@@ -34,6 +34,12 @@
     if(user){
         document.getElementById("login").style.display = "none";
         document.getElementById("homepage").style.display = "inline";
+        if(await isDoctor(user.uid, db)) {
+            document.getElementById("search").href = "doctor.html";
+            document.getElementById("search").textContent = "My Schedule";
+            document.getElementById("appointments").href = "appointments_doctor.html";
+            document.getElementById("settings").href = "settings_doctor.html";
+        }
     } else {
         document.getElementById("login").style.display= "flex";
         document.getElementById("homepage").style.display = "none";

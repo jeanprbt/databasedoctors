@@ -15,7 +15,7 @@ import {
     deleteDoc,
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
-import { addCitiesToSelect, addSpecialitiesToSelect, signOutButton } from "./utils.js";
+import {addCitiesToSelect, addSpecialitiesToSelect, isPatient, signOutButton} from "./utils.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -55,9 +55,13 @@ addSpecialitiesToSelect(select);
 let currentUser;
 
 // Restrict page to logged-in users
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
+
+        if (await isPatient(user.uid, db)) {
+            window.location.href = "settings_patient.html"; // If user is a patient, redirect to patient page
+        }
 
         // Fill form fields with current data
         document.getElementById('new-email').value = currentUser.email;

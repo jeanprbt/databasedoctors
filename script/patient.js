@@ -18,7 +18,7 @@ import {
     addCitiesAndAllCitiesToSelect,
     addSpecialitiesAndAllSpecialitiesToSelect,
     signOutButton,
-    formatTime
+    formatTime, isPatient, isDoctor
 } from "./utils.js";
 
 // Web app's Firebase configuration
@@ -40,20 +40,15 @@ let currentUser;
 
 // Restrict page to logged-in patient users
 onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        currentUser = user;
-        const docRef = doc(db, "patients", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            // Add a welcome message
-            const welcomeMessage = document.getElementById('welcome-message');
-            welcomeMessage.textContent = `Welcome ${user.displayName} !`;
-        } else {
-            window.location.href = "doctor.html"; // If user is a doctor, redirect to doctor page
-        }
-    } else {
+    if (!user) {
         window.location.href = 'index.html'; // If user is not logged in, redirect to login page
     }
+    if (await isDoctor(user.uid, db)) {
+        window.location.href = "doctor.html"; // If user is a doctor, redirect to doctor page
+    }
+    currentUser = user;
+    const welcomeMessage = document.getElementById('welcome-message');
+    welcomeMessage.textContent = `Welcome ${user.displayName} !`;
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

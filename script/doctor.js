@@ -14,8 +14,10 @@ import {
     addDoc,
     deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
-import {signOutButton,
-        formatTime
+import {
+    signOutButton,
+    formatTime,
+    isPatient
 } from "./utils.js";
 
 //Firebase configuration
@@ -35,19 +37,14 @@ const db = getFirestore(app);
 
 // Restrict page to logged-in doctor users
 onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        const docRef = doc(db, "doctors", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            // Add a welcome message
-            const welcomeMessage = document.getElementById('welcome-message');
-            welcomeMessage.textContent = `Welcome ${user.displayName} !`;
-        } else {
-            window.location.href = "patient.html"; // If user is a patient, redirect to doctor page
-        }
-    } else {
-        window.location = 'index.html'; // If user is not logged in, redirect to login page
+    if (!user) {
+        window.location.href = 'index.html'; // If user is not logged in, redirect to login page
     }
+    if (await isPatient(user.uid, db)) {
+        window.location.href = 'patient.html'; // If user is a patient, redirect to patient page
+    }
+    const welcomeMessage = document.getElementById('welcome-message');
+    welcomeMessage.textContent = `Welcome ${user.displayName} !`;
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

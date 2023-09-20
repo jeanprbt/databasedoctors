@@ -10,33 +10,7 @@
 
 <body>
 
-<section id="homepage" style="display: none">
-    <header id="header">
-        <nav>
-            <a href="#">
-                <div class="logo">
-                    <img src="res/logo.png" alt="logo"/>
-                    <div class="text">
-                        <h2>DatabaseDoctors</h2>
-                        <p>you're only one query away from healing</p>
-                    </div>
-                </div>
-            </a>
-
-            <ul class="nav-links">
-                <li><a href="patient.html">Search</a></li>
-                <li><a href="appointments_patient.html">Appointments</a></li>
-                <li><a href="settings_patient.html">Profile</a></li>
-                <li id="sign-out"><a href="#">Sign out</a></li>
-            </ul>
-        </nav>
-    </header>
-
-
-    <h1>You are connected</h1>
-</section>
-
-<section id="login">
+<div id="login">
     <h1>Welcome to Database doctors !</h1>
 
     <!-- Login Form -->
@@ -55,10 +29,36 @@
             <button id="new-doctor" type="button">I'm a new doctor 👩🏼‍⚕️</button>
         </div>
     </div>
+</div>
+
+<div id="homepage" style="display: none">
+    <header id="header">
+        <nav>
+            <a href="#">
+                <div class="logo">
+                    <img src="res/logo.png" alt="logo"/>
+                    <div class="text">
+                        <h2>DatabaseDoctors</h2>
+                        <p>you're only one query away from healing</p>
+                    </div>
+                </div>
+            </a>
+
+            <ul class="nav-links">
+                <li><a id="search" href="patient.html">Search</a></li>
+                <li><a id="appointments" href="appointments_patient.html">Appointments</a></li>
+                <li><a id="settings" href="settings_patient.html">Settings</a></li>
+                <li id="sign-out"><a href="#">Sign out</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <h1>You are connected</h1>
 </section>
+
 
 <a href="readme.html" style="position: absolute; left: 10px; bottom: 10px; font-size: 24px; color: midnightblue">READ ME
     📖</a>
-
 </body>
 </html>

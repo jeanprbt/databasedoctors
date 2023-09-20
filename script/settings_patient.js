@@ -15,7 +15,7 @@ import {
     deleteDoc,
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
-import { signOutButton } from "./utils.js";
+import {isDoctor, signOutButton} from "./utils.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -50,9 +50,13 @@ signOutButton(document.getElementById('sign-out'), auth);
 let currentUser;
 
 // Restrict page to logged-in users
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
+
+        if (await isDoctor(user.uid, db)) {
+            window.location.href = "settings_doctor.html"; // If user is a doctor, redirect to doctor page
+        }
 
         // Fill form fields with current data
         document.getElementById('new-email').value = currentUser.email;

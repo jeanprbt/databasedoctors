@@ -2,6 +2,10 @@ import {
     signOut,
 } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
 
+import {
+    doc,
+    getDoc
+} from "https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js";
 
 // Function to add the cities to the given select element
 
@@ -108,4 +112,16 @@ export function formatTime(date) {
     const minutes = date.getMinutes().toString().padStart(2, '0');
 
     return `${day}-${month}-${year} ${hours}:${minutes}`;
+}
+
+export async function isPatient(uid, db) {
+    const docRef = doc(db, "patients", uid);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists();
+}
+
+export async function isDoctor(uid, db) {
+    const docRef = doc(db, "doctors", uid);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists();
 }

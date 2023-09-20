@@ -7,6 +7,7 @@ body {
     background-image: url('../res/becoming-doctor.jpg');
     background-size: cover;
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     background-color: #f0f0f0;
     min-height: 100vh;
 }
@@ -209,9 +210,13 @@ label {
 .calendar {
     border-radius: 10px; /* Adjust the radius value as desired */
     height: 364px; /* Set the desired height in pixels */
-    width: 80%; /* Set the desired width as needed */
+    width: 90%; /* Set the desired width as needed */
     margin: 0 auto; /* Center the calendar horizontally */
     user-select: none; /* Prevent text selection */
+}
+
+.appointments-calendar {
+    max-height: 550px;
 }
 
 #doccal{
