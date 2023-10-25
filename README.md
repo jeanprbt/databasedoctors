@@ -99,4 +99,10 @@ When initially thinking about our project, we struggled to decide between a runn
 
 Our choice of structure to store our databases and handle authentication was made easily. Firebase allowed us to access the databases remotely. Since we are four to be involved in this project, it was very useful to be able to access the databases whenever we wanted and wherever we were.
 
-Regarding to security, we have decided to delegate security issues to Firebase, which already implements all the necessary measures. For example, we cannot see any passwords of our users which are salted and hashed. We are not vulnerable to SQL injection since we do not use SQL, and Firebase is pretty well-protected against other types of injection. We also decided to implement passwords instead of asymmetric cryptography to secure accounts, since it is easier to handle for users and the data is not confidential enough to ask our users such complex methods of authentication. We are well-aware that our app has flaws in terms of security, but regarding to the time we had and the needed security guarantees we were coherent.
+Regarding to security, we have decided to delegate security issues to Firebase, which already implements all the necessary measures. For example, we cannot see any passwords of our users which are salted and hashed. We are not vulnerable to SQL injection since we do not use SQL, and Firebase is pretty well-protected against other types of injection. We also 
+
+
+decided to implement passwords instead of asymmetric cryptography to secure accounts, since it is easier to handle for users and the data is not confidential enough to ask our users such complex methods of authentication. We are well-aware that our app has flaws in terms of security, but regarding to the time we had and the needed security guarantees we were coherent.
+
+### Video 
+https://github.com/JEANPRBT/databasedoctors/assets/125833841/b12c4b7d-3784-4721-8dc5-1632bc25c911
